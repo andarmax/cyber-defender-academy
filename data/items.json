@@ -1,0 +1,58 @@
+[
+  {
+    "id": "fw_basic",
+    "name": "Perimeter Firewall v1",
+    "category": "Firewall Upgrade",
+    "cost": 500,
+    "desc": "Menyaring trafik masuk/keluar dasar dan meningkatkan Security Posture."
+  },
+  {
+    "id": "fw_ngfw",
+    "name": "Next-Gen Policy Firewall",
+    "category": "Firewall Upgrade",
+    "cost": 1400,
+    "desc": "Inspeksi aplikasi berbasis kebijakan dan segmentasi VLAN lanjutan."
+  },
+  {
+    "id": "tk_logparser",
+    "name": "Forensic Log Analyzer Kit",
+    "category": "Security Toolkit",
+    "cost": 800,
+    "desc": "Membantu inspeksi jejak log dan rekonstruksi kronologi insiden."
+  },
+  {
+    "id": "tk_hardening",
+    "name": "Baseline Hardening Checklist Pro",
+    "category": "Security Toolkit",
+    "cost": 1150,
+    "desc": "Standar konfigurasi aman untuk server, OS, dan layanan internal."
+  },
+  {
+    "id": "sc_netmap",
+    "name": "Internal Asset & Topology Scanner",
+    "category": "Threat Scanner",
+    "cost": 1100,
+    "desc": "Inventarisasi aset dan pemetaan celah konfigurasi di jaringan internal."
+  },
+  {
+    "id": "siem_core",
+    "name": "SOC SIEM Correlation Engine",
+    "category": "SIEM Upgrade",
+    "cost": 1600,
+    "desc": "Mengorelasikan event log lintas host untuk prioritas alert SOC."
+  },
+  {
+    "id": "bdg_blue",
+    "name": "Blue Team Responder Badge",
+    "category": "Security Badge",
+    "cost": 1200,
+    "desc": "Lencana kehormatan operatif pertahanan siber defensif."
+  },
+  {
+    "id": "spc_ciso_key",
+    "name": "CISO Governance Charter",
+    "category": "Special Item",
+    "cost": 2500,
+    "desc": "Piagam tata kelola risiko, kepatuhan, dan strategi keamanan perusahaan."
+  }
+]
