@@ -12,11 +12,11 @@ import { AchievementManager } from './achievements.js';
 import { LeaderboardManager } from './leaderboard.js';
 import { UIManager } from './ui.js';
 
-class CyberDefenderGame {
+export class CyberDefenderGame {
   constructor() {
     this.sound = new SoundEngine();
     this.state = SaveSystem.load();
-    this.player = new PlayerManager(this.state);
+    this.player = new PlayerManager(this);
     this.ui = new UIManager(this);
 
     this.missions = null;
@@ -28,41 +28,47 @@ class CyberDefenderGame {
   }
 
   async boot() {
-    this.ui.initParticles();
-    this.ui.setLoadingProgress(20, 'Loading Defensive Threat Intelligence...');
+    try {
+      this.ui.initParticles();
+      this.ui.setLoadingProgress(20, 'Loading Defensive Threat Intelligence...');
 
-    const [missionsData, questionsData, achievementsData, itemsData] = await Promise.all([
-      this.fetchJSON('./data/missions.json', []),
-      this.fetchJSON('./data/questions.json', []),
-      this.fetchJSON('./data/achievements.json', []),
-      this.fetchJSON('./data/items.json', [])
-    ]);
+      const [missionsData, questionsData, achievementsData, itemsData] = await Promise.all([
+        this.fetchJSON('./data/missions.json', []),
+        this.fetchJSON('./data/questions.json', []),
+        this.fetchJSON('./data/achievements.json', []),
+        this.fetchJSON('./data/items.json', [])
+      ]);
 
-    this.ui.setLoadingProgress(65, 'Initializing SOC Modules & Skill Matrix...');
+      this.ui.setLoadingProgress(65, 'Initializing SOC Modules & Skill Matrix...');
 
-    this.missions = new MissionManager(this, missionsData);
-    this.quiz = new QuizManager(this, questionsData);
-    this.skillTree = new SkillTreeManager(this);
-    this.inventory = new InventoryManager(this, itemsData);
-    this.achievements = new AchievementManager(this, achievementsData);
-    this.leaderboard = new LeaderboardManager(this);
+      this.missions = new MissionManager(this, missionsData);
+      this.quiz = new QuizManager(this, questionsData);
+      this.skillTree = new SkillTreeManager(this);
+      this.inventory = new InventoryManager(this, itemsData);
+      this.achievements = new AchievementManager(this, achievementsData);
+      this.leaderboard = new LeaderboardManager(this);
 
-    this.ui.setLoadingProgress(95, 'Verifying LocalStorage Integrity...');
-    this.bindGlobalEvents();
-
-    setTimeout(() => {
-      this.ui.hideLoading();
-      if (!this.state.initialized) {
-        this.ui.showOnboarding();
-      } else {
-        this.startSession();
-      }
-    }, 450);
+      this.ui.setLoadingProgress(95, 'Verifying LocalStorage Integrity...');
+      this.bindGlobalEvents();
+      this.ui.setLoadingProgress(100, 'Sandbox Ready.');
+    } catch (err) {
+      console.error('Boot error:', err);
+      this.ui.setLoadingProgress(100, 'Fallback mode active.');
+    } finally {
+      setTimeout(() => {
+        this.ui.hideLoading();
+        if (!this.state?.initialized) {
+          this.ui.showOnboarding();
+        } else {
+          this.startSession();
+        }
+      }, 300);
+    }
   }
 
   async fetchJSON(path, fallback) {
     try {
-      const res = await fetch(path);
+      const res = await fetch(path, { cache: 'no-store' });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       return await res.json();
     } catch (err) {
@@ -73,7 +79,7 @@ class CyberDefenderGame {
 
   startSession() {
     this.ui.showAppShell();
-    this.achievements.evaluateAll();
+    this.achievements?.evaluateAll();
     this.refreshAllViews();
     this.autoSave(false);
   }
@@ -81,20 +87,24 @@ class CyberDefenderGame {
   refreshAllViews() {
     this.ui.renderHUD();
     this.ui.renderDashboard();
-    this.missions.renderMissionList();
-    this.missions.renderLab('phishing');
-    this.quiz.renderQuizHome();
-    this.skillTree.render();
-    this.inventory.render();
-    this.achievements.render();
-    this.leaderboard.render();
+    this.missions?.renderMissionList();
+    this.missions?.renderLab(this.missions.currentLab || 'phishing');
+    this.quiz?.renderQuizHome();
+    this.skillTree?.render();
+    this.inventory?.render();
+    this.achievements?.render();
+    this.leaderboard?.render();
   }
 
   advanceDailyProgress(taskType, amount = 1) {
-    SaveSystem.checkDailyReset(this.state);
+    if (typeof SaveSystem.checkDailyReset === 'function') {
+      SaveSystem.checkDailyReset(this.state);
+    }
     const dc = this.state.dailyChallenge;
-    if (dc.taskType === taskType && !dc.claimed) {
-      dc.progress = Math.min(dc.target, dc.progress + amount);
+    if (!dc) return;
+    const currentType = dc.taskType || dc.type;
+    if (currentType === taskType && !dc.claimed) {
+      dc.progress = Math.min(dc.target, (dc.progress || 0) + amount);
       if (dc.progress >= dc.target) {
         this.ui.toast('Daily Directive siap diklaim di Dashboard!', 'success');
       }
@@ -111,9 +121,9 @@ class CyberDefenderGame {
 
   bindGlobalEvents() {
     // Onboarding
-    document.getElementById('btn-start-career').addEventListener('click', () => {
+    document.getElementById('btn-start-career')?.addEventListener('click', () => {
       const input = document.getElementById('agent-name-input');
-      const name = input.value.trim() || 'CyberOperative';
+      const name = (input?.value || '').trim() || 'andarmax';
       this.state.player.username = name.slice(0, 20);
       this.state.initialized = true;
       this.sound.success();
@@ -137,48 +147,52 @@ class CyberDefenderGame {
         this.sound.click();
         document.querySelectorAll('.lab-tab').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        this.missions.renderLab(btn.dataset.lab);
+        this.missions?.renderLab(btn.dataset.lab);
       });
     });
 
     // Mission Filters
-    document.getElementById('mission-category-filter').addEventListener('change', () => this.missions.renderMissionList());
-    document.getElementById('mission-status-filter').addEventListener('change', () => this.missions.renderMissionList());
+    document.getElementById('mission-category-filter')?.addEventListener('change', () => this.missions?.renderMissionList());
+    document.getElementById('mission-status-filter')?.addEventListener('change', () => this.missions?.renderMissionList());
 
     // Close Mission Modal
-    document.getElementById('btn-close-mission').addEventListener('click', () => {
+    document.getElementById('btn-close-mission')?.addEventListener('click', () => {
       this.sound.click();
       this.ui.closeMissionModal();
     });
 
     // HUD Audio & Save Controls
-    document.getElementById('btn-toggle-sound').addEventListener('click', (e) => {
-      const on = this.sound.toggleSFX();
+    document.getElementById('btn-toggle-sound')?.addEventListener('click', (e) => {
+      const on = typeof this.sound.toggleSFX === 'function'
+        ? this.sound.toggleSFX()
+        : this.sound.toggleSfx();
       e.currentTarget.textContent = on ? '🔊' : '🔇';
     });
 
-    document.getElementById('btn-toggle-bgm').addEventListener('click', (e) => {
-      const on = this.sound.toggleBGM();
+    document.getElementById('btn-toggle-bgm')?.addEventListener('click', (e) => {
+      const on = typeof this.sound.toggleBGM === 'function'
+        ? this.sound.toggleBGM()
+        : this.sound.toggleAmbient();
       e.currentTarget.textContent = on ? '🎶' : '🎵';
       this.ui.toast(on ? 'Ambient Synth aktif' : 'Ambient Synth nonaktif');
     });
 
-    document.getElementById('btn-save-now').addEventListener('click', () => this.autoSave(true));
+    document.getElementById('btn-save-now')?.addEventListener('click', () => this.autoSave(true));
 
     // SOC Scan Logs
-    document.getElementById('btn-refresh-soc').addEventListener('click', () => {
+    document.getElementById('btn-refresh-soc')?.addEventListener('click', () => {
       this.sound.click();
       this.ui.renderSOCAlerts(true);
     });
 
     // Export / Import / Reset Save
-    document.getElementById('btn-export-save').addEventListener('click', () => {
+    document.getElementById('btn-export-save')?.addEventListener('click', () => {
       this.sound.click();
       SaveSystem.exportJSON(this.state);
     });
 
-    document.getElementById('input-import-save').addEventListener('change', (e) => {
-      const file = e.target.files[0];
+    document.getElementById('input-import-save')?.addEventListener('change', (e) => {
+      const file = e.target.files?.[0];
       if (!file) return;
       const reader = new FileReader();
       reader.onload = () => {
@@ -186,7 +200,7 @@ class CyberDefenderGame {
           const imported = JSON.parse(reader.result);
           if (!imported.player || !imported.skills) throw new Error('Invalid format');
           this.state = imported;
-          this.player = new PlayerManager(this.state);
+          this.player = new PlayerManager(this);
           this.autoSave(false);
           this.refreshAllViews();
           this.sound.success();
@@ -199,7 +213,7 @@ class CyberDefenderGame {
       reader.readAsText(file);
     });
 
-    document.getElementById('btn-reset-save').addEventListener('click', () => {
+    document.getElementById('btn-reset-save')?.addEventListener('click', () => {
       if (confirm('Hapus seluruh progres karier dan mulai ulang dari Intern?')) {
         SaveSystem.reset();
         location.reload();
