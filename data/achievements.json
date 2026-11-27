@@ -1,0 +1,74 @@
+[
+  {
+    "id": "ach_first_login",
+    "title": "First Login",
+    "desc": "Memulai karier defensif di Cyber Defender Academy.",
+    "ap": 50,
+    "bonusCredits": 150,
+    "ruleType": "initialized",
+    "ruleValue": 1
+  },
+  {
+    "id": "ach_threat_hunter",
+    "title": "Threat Hunter",
+    "desc": "Menyelesaikan minimal 5 misi pertahanan siber.",
+    "ap": 100,
+    "bonusCredits": 250,
+    "ruleType": "missionsCount",
+    "ruleValue": 5
+  },
+  {
+    "id": "ach_malware_hunter",
+    "title": "Malware Hunter",
+    "desc": "Mengidentifikasi minimal 2 skenario perilaku malware di Cyber Labs.",
+    "ap": 100,
+    "bonusCredits": 250,
+    "ruleType": "malwareSolved",
+    "ruleValue": 2
+  },
+  {
+    "id": "ach_soc_defender",
+    "title": "SOC Defender",
+    "desc": "Menyelesaikan minimal 12 misi dan mencapai Level 4.",
+    "ap": 150,
+    "bonusCredits": 350,
+    "ruleType": "missionsCount",
+    "ruleValue": 12
+  },
+  {
+    "id": "ach_sec_engineer",
+    "title": "Security Engineer",
+    "desc": "Mengamankan topologi jaringan di Network Defense atau memiliki minimal 3 item.",
+    "ap": 180,
+    "bonusCredits": 400,
+    "ruleType": "networkHardened",
+    "ruleValue": 1
+  },
+  {
+    "id": "ach_sec_architect",
+    "title": "Security Architect",
+    "desc": "Mencapai Level 8 dalam perjalanan karier defensif.",
+    "ap": 250,
+    "bonusCredits": 600,
+    "ruleType": "levelReached",
+    "ruleValue": 8
+  },
+  {
+    "id": "ach_sec_legend",
+    "title": "Security Legend",
+    "desc": "Menyelesaikan minimal 25 misi pertahanan di Cyber Defender Academy.",
+    "ap": 350,
+    "bonusCredits": 900,
+    "ruleType": "missionsCount",
+    "ruleValue": 25
+  },
+  {
+    "id": "ach_cyber_guardian",
+    "title": "Cyber Guardian",
+    "desc": "Mencapai Level 12 dan memperkuat postur pertahanan organisasi.",
+    "ap": 500,
+    "bonusCredits": 1200,
+    "ruleType": "levelReached",
+    "ruleValue": 12
+  }
+]
