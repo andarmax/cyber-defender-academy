@@ -5,6 +5,8 @@ import { SoundEngine } from './audio.js';
 import { SaveSystem } from './save.js';
 import { PlayerManager } from './player.js';
 import { MissionManager } from './missions.js';
+import { ThreatIntelManager } from './threatintel.js';
+import { SIEMConsoleManager } from './siem.js';
 import { QuizManager } from './quiz.js';
 import { SkillTreeManager } from './skilltree.js';
 import { InventoryManager } from './inventory.js';
@@ -12,7 +14,7 @@ import { AchievementManager } from './achievements.js';
 import { LeaderboardManager } from './leaderboard.js';
 import { UIManager } from './ui.js';
 
-export class CyberDefenderGame {
+class CyberDefenderGame {
   constructor() {
     this.sound = new SoundEngine();
     this.state = SaveSystem.load();
@@ -20,6 +22,8 @@ export class CyberDefenderGame {
     this.ui = new UIManager(this);
 
     this.missions = null;
+    this.threatIntel = null;
+    this.siem = null;
     this.quiz = null;
     this.skillTree = null;
     this.inventory = null;
@@ -39,25 +43,27 @@ export class CyberDefenderGame {
         this.fetchJSON('./data/items.json', [])
       ]);
 
-      this.ui.setLoadingProgress(65, 'Initializing SOC Modules & Skill Matrix...');
+      this.ui.setLoadingProgress(65, 'Initializing SOC, SIEM & CTI Modules...');
 
       this.missions = new MissionManager(this, missionsData);
+      this.threatIntel = new ThreatIntelManager(this);
+      this.siem = new SIEMConsoleManager(this);
       this.quiz = new QuizManager(this, questionsData);
       this.skillTree = new SkillTreeManager(this);
       this.inventory = new InventoryManager(this, itemsData);
       this.achievements = new AchievementManager(this, achievementsData);
       this.leaderboard = new LeaderboardManager(this);
 
-      this.ui.setLoadingProgress(95, 'Verifying LocalStorage Integrity...');
+      this.ui.setLoadingProgress(95, 'Verifying LocalStorage Schema v4.3...');
       this.bindGlobalEvents();
-      this.ui.setLoadingProgress(100, 'Sandbox Ready.');
+      this.ui.setLoadingProgress(100, 'Defensive Sandbox Ready.');
     } catch (err) {
       console.error('Boot error:', err);
-      this.ui.setLoadingProgress(100, 'Fallback mode active.');
+      this.ui.setLoadingProgress(100, 'Fallback Sandbox Active.');
     } finally {
       setTimeout(() => {
         this.ui.hideLoading();
-        if (!this.state?.initialized) {
+        if (!this.state.initialized) {
           this.ui.showOnboarding();
         } else {
           this.startSession();
@@ -79,7 +85,8 @@ export class CyberDefenderGame {
 
   startSession() {
     this.ui.showAppShell();
-    this.achievements?.evaluateAll();
+    this.player.evaluateCertifications();
+    this.achievements.evaluateAll();
     this.refreshAllViews();
     this.autoSave(false);
   }
@@ -89,6 +96,8 @@ export class CyberDefenderGame {
     this.ui.renderDashboard();
     this.missions?.renderMissionList();
     this.missions?.renderLab(this.missions.currentLab || 'phishing');
+    this.threatIntel?.render();
+    this.siem?.render();
     this.quiz?.renderQuizHome();
     this.skillTree?.render();
     this.inventory?.render();
@@ -97,14 +106,10 @@ export class CyberDefenderGame {
   }
 
   advanceDailyProgress(taskType, amount = 1) {
-    if (typeof SaveSystem.checkDailyReset === 'function') {
-      SaveSystem.checkDailyReset(this.state);
-    }
+    SaveSystem.checkDailyReset(this.state);
     const dc = this.state.dailyChallenge;
-    if (!dc) return;
-    const currentType = dc.taskType || dc.type;
-    if (currentType === taskType && !dc.claimed) {
-      dc.progress = Math.min(dc.target, (dc.progress || 0) + amount);
+    if (dc && dc.taskType === taskType && !dc.claimed) {
+      dc.progress = Math.min(dc.target, dc.progress + amount);
       if (dc.progress >= dc.target) {
         this.ui.toast('Daily Directive siap diklaim di Dashboard!', 'success');
       }
@@ -136,26 +141,23 @@ export class CyberDefenderGame {
     document.querySelectorAll('.nav-item').forEach(btn => {
       btn.addEventListener('click', () => {
         this.sound.click();
-        const target = btn.dataset.view;
-        this.ui.switchView(target);
+        this.ui.switchView(btn.dataset.view);
       });
     });
 
     // Lab Tabs
-    document.querySelectorAll('.lab-tab').forEach(btn => {
+    document.querySelectorAll('.lab-tab[data-lab]').forEach(btn => {
       btn.addEventListener('click', () => {
         this.sound.click();
-        document.querySelectorAll('.lab-tab').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.lab-tab[data-lab]').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         this.missions?.renderLab(btn.dataset.lab);
       });
     });
 
-    // Mission Filters
+    // Mission Filters & Modal Close
     document.getElementById('mission-category-filter')?.addEventListener('change', () => this.missions?.renderMissionList());
     document.getElementById('mission-status-filter')?.addEventListener('change', () => this.missions?.renderMissionList());
-
-    // Close Mission Modal
     document.getElementById('btn-close-mission')?.addEventListener('click', () => {
       this.sound.click();
       this.ui.closeMissionModal();
@@ -163,16 +165,12 @@ export class CyberDefenderGame {
 
     // HUD Audio & Save Controls
     document.getElementById('btn-toggle-sound')?.addEventListener('click', (e) => {
-      const on = typeof this.sound.toggleSFX === 'function'
-        ? this.sound.toggleSFX()
-        : this.sound.toggleSfx();
+      const on = typeof this.sound.toggleSFX === 'function' ? this.sound.toggleSFX() : this.sound.toggleSfx();
       e.currentTarget.textContent = on ? '🔊' : '🔇';
     });
 
     document.getElementById('btn-toggle-bgm')?.addEventListener('click', (e) => {
-      const on = typeof this.sound.toggleBGM === 'function'
-        ? this.sound.toggleBGM()
-        : this.sound.toggleAmbient();
+      const on = typeof this.sound.toggleBGM === 'function' ? this.sound.toggleBGM() : this.sound.toggleAmbient();
       e.currentTarget.textContent = on ? '🎶' : '🎵';
       this.ui.toast(on ? 'Ambient Synth aktif' : 'Ambient Synth nonaktif');
     });
@@ -198,13 +196,12 @@ export class CyberDefenderGame {
       reader.onload = () => {
         try {
           const imported = JSON.parse(reader.result);
-          if (!imported.player || !imported.skills) throw new Error('Invalid format');
-          this.state = imported;
+          this.state = SaveSystem.migrateAndRepair(imported);
           this.player = new PlayerManager(this);
           this.autoSave(false);
           this.refreshAllViews();
           this.sound.success();
-          this.ui.toast('Save data berhasil diimpor!', 'success');
+          this.ui.toast('Save data berhasil dimigrasi & diimpor!', 'success');
         } catch {
           this.sound.alert();
           this.ui.toast('File JSON tidak valid!', 'alert');
