@@ -2,17 +2,16 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Cyber Defender Academy - Simulasi Edukasi Cybersecurity Defensif dari Intern hingga CISO." />
   <title>Cyber Defender Academy | Defensive SOC & Career Simulator</title>
   <link rel="stylesheet" href="./css/style.css" />
 </head>
 <body>
-  <!-- Particle Background -->
   <canvas id="bg-particles" aria-hidden="true"></canvas>
 
   <!-- Boot / Loading Screen -->
-  <div id="loading-screen" class="loading-overlay">
+  <div id="loading-screen" class="loading-overlay" role="status" aria-live="polite">
     <div class="loader-box">
       <div class="cyber-emblem">CDA // SEC-OS v4.2</div>
       <div class="loader-bar-wrap">
@@ -22,20 +21,20 @@
     </div>
   </div>
 
-  <!-- Onboarding / Profile Setup Modal -->
-  <div id="onboarding-modal" class="modal-backdrop hidden">
+  <!-- Onboarding Modal -->
+  <div id="onboarding-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="onboard-title">
     <div class="modal-card glowing-border">
-      <div class="modal-header">
+      <div class="modal-header onboarding-header">
         <span class="badge-neon">NEW OPERATIVE REGISTRATION</span>
-        <h2>Selamat Datang di Cyber Defender Academy</h2>
+        <h2 id="onboard-title">Selamat Datang di Cyber Defender Academy</h2>
       </div>
       <p class="modal-desc">
-        Anda baru saja diterima sebagai <strong>Cyber Security Intern</strong> di <em>Nusantara Cyber Shield Corp</em>. 
-        Lindungi infrastruktur perusahaan dari ancaman digital melalui analisis defensif yang legal dan etis.
+        Anda diterima sebagai <strong>Cyber Security Intern</strong> di <em>Nusantara Cyber Shield Corp</em>.
+        Lindungi infrastruktur perusahaan dari ancaman digital melalui analisis defensif yang legal, etis, dan berbasis standar industri.
       </p>
       <div class="form-group">
         <label for="agent-name-input">Codename / Username Operatif:</label>
-        <input type="text" id="agent-name-input" maxlength="20" placeholder="Contoh: Andar_Sec" autocomplete="off" />
+        <input type="text" id="agent-name-input" maxlength="20" placeholder="Contoh: andarmax" autocomplete="off" />
       </div>
       <button id="btn-start-career" class="btn btn-primary btn-block">MULAI KARIER SEBAGAI INTERN</button>
     </div>
@@ -43,7 +42,6 @@
 
   <!-- Main App Shell -->
   <div id="app-shell" class="app-shell hidden">
-    <!-- Top HUD Header -->
     <header class="top-hud">
       <div class="hud-brand">
         <div class="brand-logo">🛡️ CDA</div>
@@ -54,42 +52,40 @@
       </div>
 
       <div class="hud-stats">
-        <div class="stat-chip" title="Operative Name & Level">
+        <div class="stat-chip">
           <span class="stat-label">AGENT</span>
-          <span id="hud-username" class="stat-val neon-blue">Agent</span>
+          <span id="hud-username" class="stat-val neon-blue">andarmax</span>
           <span id="hud-level" class="lvl-tag">LVL 1</span>
         </div>
-        <div class="stat-chip" title="Experience Points">
+        <div class="stat-chip">
           <span class="stat-label">XP</span>
           <div class="xp-mini-wrap">
             <div id="hud-xp-bar" class="xp-mini-fill"></div>
           </div>
           <span id="hud-xp-text" class="stat-val">0 / 500</span>
         </div>
-        <div class="stat-chip" title="Security Budget / Credits">
+        <div class="stat-chip">
           <span class="stat-label">CREDITS</span>
           <span id="hud-credits" class="stat-val neon-green">₵ 1,000</span>
         </div>
-        <div class="stat-chip" title="Corporate Trust & Reputation">
+        <div class="stat-chip">
           <span class="stat-label">REPUTATION</span>
           <span id="hud-reputation" class="stat-val neon-purple">50%</span>
         </div>
-        <div class="stat-chip" title="Available Skill Points">
+        <div class="stat-chip">
           <span class="stat-label">SP</span>
           <span id="hud-sp" class="stat-val neon-amber">2</span>
         </div>
       </div>
 
       <div class="hud-controls">
-        <button id="btn-toggle-sound" class="icon-btn" title="Toggle Audio">🔊</button>
-        <button id="btn-toggle-bgm" class="icon-btn" title="Toggle Ambient Synth">🎵</button>
-        <button id="btn-save-now" class="icon-btn" title="Force Auto-Save">💾</button>
+        <button id="btn-toggle-sound" class="icon-btn" aria-label="Toggle Sound Effects" title="Toggle Audio">🔊</button>
+        <button id="btn-toggle-bgm" class="icon-btn" aria-label="Toggle Ambient Synth" title="Toggle Ambient Synth">🎵</button>
+        <button id="btn-save-now" class="icon-btn" aria-label="Save Progress" title="Force Auto-Save">💾</button>
       </div>
     </header>
 
-    <!-- Workspace Layout -->
     <div class="workspace-container">
-      <!-- Sidebar Navigation (Desktop) & Bottom Bar (Mobile) -->
       <nav class="side-nav" aria-label="Main Navigation">
         <button class="nav-item active" data-view="dashboard">
           <span class="nav-icon">📊</span>
@@ -99,13 +95,21 @@
           <span class="nav-icon">🎯</span>
           <span class="nav-text">Missions (50+)</span>
         </button>
+        <button class="nav-item" data-view="siem">
+          <span class="nav-icon">📟</span>
+          <span class="nav-text">Mini SIEM</span>
+        </button>
+        <button class="nav-item" data-view="threatintel">
+          <span class="nav-icon">🛰️</span>
+          <span class="nav-text">Threat Intel</span>
+        </button>
         <button class="nav-item" data-view="simulations">
           <span class="nav-icon">🧪</span>
           <span class="nav-text">Cyber Labs</span>
         </button>
         <button class="nav-item" data-view="quiz">
           <span class="nav-icon">🧠</span>
-          <span class="nav-text">Cyber Quiz (200+)</span>
+          <span class="nav-text">Cyber Quiz</span>
         </button>
         <button class="nav-item" data-view="skilltree">
           <span class="nav-icon">🌳</span>
@@ -113,7 +117,7 @@
         </button>
         <button class="nav-item" data-view="inventory">
           <span class="nav-icon">🎒</span>
-          <span class="nav-text">Armory & Gear</span>
+          <span class="nav-text">Armory</span>
         </button>
         <button class="nav-item" data-view="achievements">
           <span class="nav-icon">🏆</span>
@@ -125,14 +129,13 @@
         </button>
       </nav>
 
-      <!-- Dynamic Viewport -->
       <main id="main-viewport" class="main-viewport">
         <!-- VIEW 1: SOC DASHBOARD -->
         <section id="view-dashboard" class="view-section active">
           <div class="section-header">
             <div>
               <h1>Security Operations Center (SOC) Command</h1>
-              <p class="subtitle">Real-time corporate defense telemetry, daily directives, and career progression.</p>
+              <p class="subtitle">Real-time corporate defense telemetry, SOC performance KPIs, and certification roadmap.</p>
             </div>
             <div class="threat-meter-box">
               <span class="meter-label">DEFCON / THREAT LEVEL:</span>
@@ -149,7 +152,25 @@
             <div id="career-roadmap-track" class="career-steps"></div>
           </div>
 
-          <!-- Dashboard KPI Grid -->
+          <!-- Certification Career Roadmap -->
+          <div class="card glowing-card" style="margin-bottom:1.1rem;">
+            <div class="card-title-row">
+              <h3>🎓 Certification Career Roadmap (Simulated)</h3>
+              <span id="cert-summary-badge" class="badge-neon">0 / 6 Certified</span>
+            </div>
+            <div id="cert-roadmap-grid" class="cert-grid"></div>
+          </div>
+
+          <!-- Real-Time SOC Metrics Dashboard -->
+          <div class="card glowing-card" style="margin-bottom:1.1rem;">
+            <div class="card-title-row">
+              <h3>📈 Live SOC Operational Metrics</h3>
+              <span class="mono-text">Calculated from SIEM, CTI &amp; Mission Telemetry</span>
+            </div>
+            <div id="soc-metrics-grid" class="soc-metrics-grid"></div>
+          </div>
+
+          <!-- Core Progress KPI Grid -->
           <div class="grid-4">
             <div class="card stat-card">
               <span class="kpi-label">Missions Completed</span>
@@ -163,7 +184,7 @@
             </div>
             <div class="card stat-card">
               <span class="kpi-label">Security Posture</span>
-              <span id="kpi-posture" class="kpi-value neon-purple">62 / 100</span>
+              <span id="kpi-posture" class="kpi-value neon-purple">50 / 100</span>
               <span class="kpi-sub">Firewall + SIEM + Skills</span>
             </div>
             <div class="card stat-card">
@@ -178,7 +199,7 @@
             <div class="card glowing-card">
               <div class="card-title-row">
                 <h3>⚡ Daily Security Directive</h3>
-                <span id="daily-reset-timer" class="mono-text">Resets at 00:00</span>
+                <span class="mono-text">Resets at 00:00 UTC</span>
               </div>
               <div id="daily-challenge-box" class="daily-box"></div>
             </div>
@@ -197,11 +218,11 @@
         <section id="view-missions" class="view-section">
           <div class="section-header">
             <div>
-              <h1>Defensive Operations & Missions</h1>
-              <p class="subtitle">Selesaikan 50+ skenario keamanan siber legal untuk naik pangkat menuju CISO.</p>
+              <h1>Defensive Operations &amp; Missions</h1>
+              <p class="subtitle">Selesaikan 50+ skenario keamanan siber legal yang terpetakan ke NIST CSF, CIS Controls, CVSS, CWE &amp; MITRE ATT&amp;CK.</p>
             </div>
             <div class="filter-bar">
-              <select id="mission-category-filter" class="cyber-select">
+              <select id="mission-category-filter" class="cyber-select" aria-label="Filter Kategori Misi">
                 <option value="ALL">Semua Kategori (10 Tipe)</option>
                 <option value="Phishing Detection">Phishing Detection</option>
                 <option value="Email Investigation">Email Investigation</option>
@@ -214,7 +235,7 @@
                 <option value="Backup Recovery">Backup Recovery</option>
                 <option value="Log Analysis">Log Analysis</option>
               </select>
-              <select id="mission-status-filter" class="cyber-select">
+              <select id="mission-status-filter" class="cyber-select" aria-label="Filter Status Misi">
                 <option value="ALL">Semua Status</option>
                 <option value="AVAILABLE">Tersedia</option>
                 <option value="COMPLETED">Selesai</option>
@@ -224,7 +245,29 @@
           <div id="missions-grid" class="missions-grid"></div>
         </section>
 
-        <!-- VIEW 3: INTERACTIVE CYBER LABS (Phishing, Password, Forensics, Malware, Network Defense) -->
+        <!-- VIEW 3: MINI SIEM CONSOLE -->
+        <section id="view-siem" class="view-section">
+          <div class="section-header">
+            <div>
+              <h1>📟 Mini SIEM Log Triage Console</h1>
+              <p class="subtitle">Analisis log autentikasi, firewall, DNS, VPN, dan endpoint untuk mengklasifikasikan Benign, Suspicious, atau Malicious.</p>
+            </div>
+          </div>
+          <div id="siem-workspace"></div>
+        </section>
+
+        <!-- VIEW 4: THREAT INTELLIGENCE CENTER -->
+        <section id="view-threatintel" class="view-section">
+          <div class="section-header">
+            <div>
+              <h1>🛰️ Threat Intelligence Center</h1>
+              <p class="subtitle">Evaluasi Indicators of Compromise (IOC), laporan kampanye ancaman, tingkat keparahan, dan mitigasi MITRE ATT&amp;CK.</p>
+            </div>
+          </div>
+          <div id="ti-workspace"></div>
+        </section>
+
+        <!-- VIEW 5: INTERACTIVE CYBER LABS -->
         <section id="view-simulations" class="view-section">
           <div class="section-header">
             <div>
@@ -235,7 +278,7 @@
 
           <div class="lab-tabs">
             <button class="lab-tab active" data-lab="phishing">📧 Phishing Inspector</button>
-            <button class="lab-tab" data-lab="password">🔐 Password & MFA Lab</button>
+            <button class="lab-tab" data-lab="password">🔐 Password &amp; MFA Lab</button>
             <button class="lab-tab" data-lab="forensics">🔍 Digital Forensics</button>
             <button class="lab-tab" data-lab="malware">🦠 Malware Classifier</button>
             <button class="lab-tab" data-lab="network">🌐 Network Defense</button>
@@ -244,7 +287,7 @@
           <div id="lab-workspace" class="card glowing-card lab-workspace"></div>
         </section>
 
-        <!-- VIEW 4: CYBER QUIZ (200+ BANK SOAL) -->
+        <!-- VIEW 6: CYBER QUIZ -->
         <section id="view-quiz" class="view-section">
           <div class="section-header">
             <div>
@@ -255,23 +298,23 @@
           <div id="quiz-container" class="card glowing-card"></div>
         </section>
 
-        <!-- VIEW 5: SKILL TREE -->
+        <!-- VIEW 7: SKILL TREE -->
         <section id="view-skilltree" class="view-section">
           <div class="section-header">
             <div>
               <h1>Cyber Defense Skill Tree</h1>
-              <p class="subtitle">Alokasikan Skill Points (SP) untuk meningkatkan efisiensi SOC, reward XP, dan pertahanan jaringan.</p>
+              <p class="subtitle">Alokasikan Skill Points (SP) untuk meningkatkan MTTD, MTTR, reward XP, dan postur pertahanan.</p>
             </div>
             <div class="sp-banner">Available Skill Points: <strong id="skill-sp-display" class="neon-amber">0</strong></div>
           </div>
           <div id="skilltree-grid" class="skilltree-grid"></div>
         </section>
 
-        <!-- VIEW 6: INVENTORY & ARMORY -->
+        <!-- VIEW 8: INVENTORY & ARMORY -->
         <section id="view-inventory" class="view-section">
           <div class="section-header">
             <div>
-              <h1>Enterprise Security Armory & Upgrades</h1>
+              <h1>Enterprise Security Armory &amp; Upgrades</h1>
               <p class="subtitle">Gunakan Credits untuk membeli perangkat keras/lunak defensif dan lencana otorisasi.</p>
             </div>
             <div class="sp-banner">Available Budget: <strong id="shop-credits-display" class="neon-green">₵ 0</strong></div>
@@ -279,23 +322,23 @@
           <div id="inventory-grid" class="missions-grid"></div>
         </section>
 
-        <!-- VIEW 7: ACHIEVEMENTS -->
+        <!-- VIEW 9: ACHIEVEMENTS -->
         <section id="view-achievements" class="view-section">
           <div class="section-header">
             <div>
-              <h1>Service Medals & Achievements</h1>
-              <p class="subtitle">Rekam jejak pencapaian karier Anda di dunia keamanan siber defensif.</p>
+              <h1>Service Medals &amp; Achievements</h1>
+              <p class="subtitle">Rekam jejak pencapaian karier Anda di SOC, Threat Intelligence, Framework Mastery &amp; Sertifikasi.</p>
             </div>
           </div>
           <div id="achievements-grid" class="missions-grid"></div>
         </section>
 
-        <!-- VIEW 8: LOCAL LEADERBOARD & DATA MANAGEMENT -->
+        <!-- VIEW 10: LEADERBOARD & SAVE MANAGEMENT -->
         <section id="view-leaderboard" class="view-section">
           <div class="section-header">
             <div>
-              <h1>SOC Hall of Fame & Save Management</h1>
-              <p class="subtitle">Peringkat lokal operatif dan manajemen backup data penyimpanan browser.</p>
+              <h1>SOC Hall of Fame &amp; Save Management</h1>
+              <p class="subtitle">Peringkat lokal operatif dan manajemen backup data penyimpanan browser (Schema v4.3).</p>
             </div>
           </div>
           <div class="grid-2">
@@ -310,6 +353,7 @@
                       <th>Title</th>
                       <th>Level</th>
                       <th>XP</th>
+                      <th>Certs</th>
                       <th>AP</th>
                     </tr>
                   </thead>
@@ -319,8 +363,8 @@
             </div>
 
             <div class="card glowing-card">
-              <h3>⚙️ Save Data & System Control</h3>
-              <p class="modal-desc">Semua progres otomatis tersimpan di <code>localStorage</code> browser Anda.</p>
+              <h3>⚙️ Save Data &amp; System Control</h3>
+              <p class="modal-desc">Semua progres otomatis tersimpan di <code>localStorage</code> browser Anda dengan validasi skema v4.3.</p>
               <div class="save-actions">
                 <button id="btn-export-save" class="btn btn-outline">📤 Export Save JSON</button>
                 <label class="btn btn-outline file-upload-btn">
@@ -337,28 +381,27 @@
     </div>
   </div>
 
-  <!-- Mission / Case Execution Modal -->
-  <div id="mission-modal" class="modal-backdrop hidden">
+  <!-- Mission Execution Modal -->
+  <div id="mission-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="m-modal-title">
     <div class="modal-card modal-lg glowing-border">
       <div class="modal-header">
         <div>
           <span id="m-modal-cat" class="badge-neon">CATEGORY</span>
           <span id="m-modal-diff" class="badge-diff">DIFFICULTY</span>
         </div>
-        <button id="btn-close-mission" class="icon-btn">✖</button>
+        <button id="btn-close-mission" class="icon-btn" aria-label="Tutup Modal">✖</button>
       </div>
       <h2 id="m-modal-title">Mission Title</h2>
       <div id="m-modal-briefing" class="briefing-box"></div>
+      <div id="m-modal-frameworks" class="fw-panel"></div>
       <div id="m-modal-artifact" class="artifact-box"></div>
       <div id="m-modal-options" class="options-list"></div>
       <div id="m-modal-feedback" class="feedback-box hidden"></div>
     </div>
   </div>
 
-  <!-- Toast Notification Container -->
-  <div id="toast-container" class="toast-container"></div>
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
 
-  <!-- ES6 Modular Entry Point -->
   <script type="module" src="./js/game.js"></script>
 </body>
 </html>
