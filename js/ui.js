@@ -1,7 +1,8 @@
 /**
- * UIManager - HUD, Dashboard, Particle Canvas, Modals & Notifications
+ * UIManager - HUD, SOC Metrics Dashboard, Certification Roadmap, Alerts & Modals
  */
-import { CAREER_RANKS } from './player.js';
+import { CAREER_RANKS, CERTIFICATION_TRACKS } from './player.js';
+import { escapeHTML } from './missions.js';
 
 export class UIManager {
   constructor(game) {
@@ -16,12 +17,12 @@ export class UIManager {
     let width = (canvas.width = window.innerWidth);
     let height = (canvas.height = window.innerHeight);
 
-    const dots = Array.from({ length: 42 }, () => ({
+    const dots = Array.from({ length: 36 }, () => ({
       x: Math.random() * width,
       y: Math.random() * height,
-      vx: (Math.random() - 0.5) * 0.45,
-      vy: (Math.random() - 0.5) * 0.45,
-      r: Math.random() * 1.8 + 0.6
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: (Math.random() - 0.5) * 0.4,
+      r: Math.random() * 1.6 + 0.6
     }));
 
     window.addEventListener('resize', () => {
@@ -31,7 +32,7 @@ export class UIManager {
 
     const tick = () => {
       ctx.clearRect(0, 0, width, height);
-      ctx.fillStyle = 'rgba(0, 240, 255, 0.35)';
+      ctx.fillStyle = 'rgba(0, 240, 255, 0.32)';
       for (const d of dots) {
         d.x += d.vx;
         d.y += d.vy;
@@ -100,7 +101,7 @@ export class UIManager {
     const currRank = this.game.player.getCurrentRank();
     const nextRank = this.game.player.getNextRank();
 
-    // Career Roadmap
+    // 1. Career Roadmap
     const roadmapEl = document.getElementById('career-roadmap-track');
     const nextReqEl = document.getElementById('career-next-req');
     if (nextReqEl) {
@@ -114,14 +115,17 @@ export class UIManager {
         const isUnlocked = p.level >= r.minLevel;
         return `
           <div class="career-node ${isCurrent ? 'current' : isUnlocked ? 'unlocked' : ''}">
-            <div>${r.title}</div>
+            <div>${escapeHTML(r.title)}</div>
             <div class="mono-text">LVL ${r.minLevel}+</div>
           </div>
         `;
       }).join('');
     }
 
-    // KPIs
+    // 2. Certification Career Roadmap
+    this.renderCertificationRoadmap();
+
+    // 3. Core KPIs
     const totalMissions = this.game.missions ? this.game.missions.missions.length : 50;
     document.getElementById('kpi-missions').textContent = `${st.completedMissions.length} / ${totalMissions}`;
 
@@ -150,9 +154,76 @@ export class UIManager {
     document.getElementById('kpi-ap').textContent = `${p.achievementPoints} AP`;
     document.getElementById('kpi-ach-count').textContent = `${st.unlockedAchievements.length} Unlocked`;
 
-    // Daily Challenge
+    // 4. Real-Time SOC Metrics Dashboard
+    this.renderSOCMetrics();
+
+    // 5. Daily Challenge & SOC Feed
     this.renderDailyChallenge();
     this.renderSOCAlerts(false);
+  }
+
+  renderCertificationRoadmap() {
+    const grid = document.getElementById('cert-roadmap-grid');
+    const summary = document.getElementById('cert-summary-badge');
+    if (!grid) return;
+
+    const earnedSet = new Set(this.game.state.certifications || []);
+    if (summary) {
+      summary.textContent = `${earnedSet.size} / ${CERTIFICATION_TRACKS.length} Certified`;
+    }
+
+    grid.innerHTML = CERTIFICATION_TRACKS.map(cert => {
+      const status = cert.evaluate(this.game.state);
+      const earned = earnedSet.has(cert.id) || status.met;
+      const pct = earned ? 100 : status.pct;
+      return `
+        <div class="cert-node ${earned ? 'earned' : ''}">
+          <div class="card-title-row">
+            <span class="badge-neon">${escapeHTML(cert.badge)}</span>
+            <span class="mono-text ${earned ? 'neon-green' : 'neon-amber'}">${earned ? '✅ CERTIFIED' : `${pct}%`}</span>
+          </div>
+          <h4 style="margin:0.35rem 0 0.2rem; font-size:0.92rem;">${escapeHTML(cert.name)}</h4>
+          <p class="subtitle" style="font-size:0.75rem; margin-bottom:0.45rem;">${escapeHTML(cert.requirementsText)}</p>
+          <div class="xp-mini-wrap" style="width:100%; height:6px;">
+            <div class="xp-mini-fill" style="width:${pct}%;"></div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  renderSOCMetrics() {
+    const grid = document.getElementById('soc-metrics-grid');
+    if (!grid) return;
+    const m = this.game.player.getSOCMetrics();
+
+    grid.innerHTML = `
+      <div class="soc-metric-tile">
+        <span class="kpi-label">Mean Time To Detect (MTTD)</span>
+        <span class="kpi-value neon-blue">${m.mttdMinutes}m</span>
+        <span class="kpi-sub">Target SOC &lt; 10m</span>
+      </div>
+      <div class="soc-metric-tile">
+        <span class="kpi-label">Mean Time To Respond (MTTR)</span>
+        <span class="kpi-value neon-purple">${m.mttrMinutes}m</span>
+        <span class="kpi-sub">Target SOC &lt; 25m</span>
+      </div>
+      <div class="soc-metric-tile">
+        <span class="kpi-label">Incident Containment Rate</span>
+        <span class="kpi-value neon-green">${m.containmentRate}%</span>
+        <span class="kpi-sub">First-Pass &amp; SIEM Precision</span>
+      </div>
+      <div class="soc-metric-tile">
+        <span class="kpi-label">False Positive Rate</span>
+        <span class="kpi-value neon-amber">${m.falsePositiveRate}%</span>
+        <span class="kpi-sub">Lower is Better (&lt; 10%)</span>
+      </div>
+      <div class="soc-metric-tile">
+        <span class="kpi-label">Threat Handling Score</span>
+        <span class="kpi-value neon-green">${m.handlingScore} / 100</span>
+        <span class="kpi-sub">Composite SOC Readiness</span>
+      </div>
+    `;
   }
 
   renderDailyChallenge() {
@@ -164,7 +235,7 @@ export class UIManager {
     const ready = dc.progress >= dc.target && !dc.claimed;
 
     box.innerHTML = `
-      <p style="font-weight:600; margin-bottom:0.5rem;">${dc.label}</p>
+      <p style="font-weight:600; margin-bottom:0.5rem;">${escapeHTML(dc.label)}</p>
       <div class="xp-mini-wrap" style="width:100%; height:8px; margin-bottom:0.5rem;">
         <div class="xp-mini-fill" style="width:${pct}%;"></div>
       </div>
@@ -183,6 +254,7 @@ export class UIManager {
         dc.claimed = true;
         this.game.player.grantRewards({ xp: dc.rewardXP, credits: dc.rewardCredits, reputation: 2 });
         this.game.sound.success();
+        this.game.achievements.evaluateAll();
         this.game.autoSave(false);
         this.game.refreshAllViews();
         this.toast('Daily Directive reward berhasil diklaim!', 'success');
@@ -192,9 +264,9 @@ export class UIManager {
 
   generateSOCAlerts() {
     return [
-      { sev: 'critical', title: 'Anomalous Outbound DNS Query Pattern', desc: 'Terdeteksi lonjakan query TXT pada subnet internal simulasi.' },
-      { sev: 'warning', title: 'Multiple Failed Auth Attempts on Gateway', desc: 'Pembatasan rate-limit aktif pada perimeter login simulasi.' },
-      { sev: 'info', title: 'Endpoint Agent Heartbeat Verified', desc: 'Seluruh host terpantau melaporkan status telemetri normal.' }
+      { sev: 'critical', title: 'High-Entropy DNS TXT Query Burst', desc: 'Terdeteksi pola tunneling pada resolver internal simulasi.', targetView: 'siem' },
+      { sev: 'warning', title: 'New Lookalike SSO Domain Registered', desc: 'Indikator domain baru terdeteksi pada feed Threat Intelligence.', targetView: 'threatintel' },
+      { sev: 'info', title: 'Scheduled Vulnerability & Policy Review', desc: 'Periksa skenario operasi defensif prioritas tinggi.', targetView: 'missions' }
     ];
   }
 
@@ -209,17 +281,17 @@ export class UIManager {
     feed.innerHTML = this.socAlerts.map(a => `
       <div class="soc-alert-item ${a.sev}">
         <div>
-          <strong style="font-size:0.86rem;">${a.title}</strong>
-          <p class="subtitle" style="font-size:0.78rem;">${a.desc}</p>
+          <strong style="font-size:0.86rem;">${escapeHTML(a.title)}</strong>
+          <p class="subtitle" style="font-size:0.78rem;">${escapeHTML(a.desc)}</p>
         </div>
-        <button class="btn btn-sm btn-outline btn-jump-missions">Tindak Lanjuti</button>
+        <button class="btn btn-sm btn-outline btn-jump-view" data-target="${escapeHTML(a.targetView || 'missions')}">Investigasi</button>
       </div>
     `).join('');
 
-    feed.querySelectorAll('.btn-jump-missions').forEach(btn => {
+    feed.querySelectorAll('.btn-jump-view').forEach(btn => {
       btn.addEventListener('click', () => {
         this.game.sound.click();
-        this.switchView('missions');
+        this.switchView(btn.dataset.target);
       });
     });
   }
