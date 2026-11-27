@@ -1,0 +1,314 @@
+[
+  {
+    "id": "QZ-001",
+    "category": "Cybersecurity Basics",
+    "question": "Apa tiga pilar utama keamanan informasi yang dikenal sebagai CIA Triad?",
+    "options": [
+      "Confidentiality, Integrity, dan Availability",
+      "Control, Inspection, dan Authentication",
+      "Compliance, Isolation, dan Authorization",
+      "Cryptography, Identity, dan Auditing"
+    ],
+    "answerIndex": 0,
+    "explanation": "CIA Triad terdiri dari Confidentiality (kerahasiaan), Integrity (keutuhan data), dan Availability (ketersediaan layanan)."
+  },
+  {
+    "id": "QZ-002",
+    "category": "Cybersecurity Basics",
+    "question": "Apa tujuan utama prinsip Least Privilege dalam manajemen akses?",
+    "options": [
+      "Memberikan hak akses minimum yang dibutuhkan pengguna atau sistem untuk menjalankan tugasnya",
+      "Memberikan hak administrator kepada semua staf agar pekerjaan lebih cepat",
+      "Menghapus pencatatan log aktivitas pengguna",
+      "Mengizinkan akses tanpa autentikasi di jaringan internal"
+    ],
+    "answerIndex": 0,
+    "explanation": "Least Privilege membatasi ruang gerak apabila suatu akun atau proses mengalami gangguan."
+  },
+  {
+    "id": "QZ-003",
+    "category": "Cybersecurity Basics",
+    "question": "Konsep Defense in Depth berarti...",
+    "options": [
+      "Menerapkan beberapa lapisan kontrol keamanan yang saling melengkapi",
+      "Hanya mengandalkan satu firewall di batas jaringan luar",
+      "Menonaktifkan enkripsi internal demi kecepatan",
+      "Menyimpan semua cadangan data di satu server yang sama"
+    ],
+    "answerIndex": 0,
+    "explanation": "Lapisan pertahanan berlapis memastikan kegagalan satu kontrol tidak langsung membuka seluruh sistem."
+  },
+  {
+    "id": "QZ-004",
+    "category": "Cybersecurity Basics",
+    "question": "Apa perbedaan utama antara Authentication dan Authorization?",
+    "options": [
+      "Authentication memverifikasi identitas, sedangkan Authorization menentukan izin akses sumber daya",
+      "Authentication mengenkripsi disk, sedangkan Authorization memindai virus",
+      "Keduanya memiliki fungsi yang identik dalam protokol jaringan",
+      "Authorization dilakukan sebelum identitas pengguna diverifikasi"
+    ],
+    "answerIndex": 0,
+    "explanation": "Identitas harus diverifikasi terlebih dahulu (Authentication) sebelum sistem memeriksa hak izinnya (Authorization)."
+  },
+  {
+    "id": "QZ-005",
+    "category": "Networking",
+    "question": "Apa fungsi utama segmentasi jaringan menggunakan VLAN atau subnet terpisah?",
+    "options": [
+      "Membatasi pergerakan lateral dan mengisolasi aset sensitif dari jaringan umum",
+      "Meningkatkan ukuran paket broadcast ke seluruh perangkat",
+      "Menghilangkan kebutuhan konfigurasi firewall",
+      "Membuka seluruh port server ke internet"
+    ],
+    "answerIndex": 0,
+    "explanation": "Segmentasi memperkecil cakupan dampak jika satu segmen mengalami insiden."
+  },
+  {
+    "id": "QZ-006",
+    "category": "Networking",
+    "question": "Protokol mana yang menyediakan komunikasi web terenkripsi menggunakan TLS?",
+    "options": [
+      "HTTPS",
+      "HTTP",
+      "Telnet",
+      "FTP"
+    ],
+    "answerIndex": 0,
+    "explanation": "HTTPS mengenkripsi lalu lintas antara klien dan server menggunakan TLS."
+  },
+  {
+    "id": "QZ-007",
+    "category": "Networking",
+    "question": "Apa peran zona DMZ (Demilitarized Zone) dalam arsitektur jaringan perusahaan?",
+    "options": [
+      "Menempatkan layanan yang diakses publik secara terpisah dari jaringan internal inti",
+      "Menyimpan database utama tanpa kontrol firewall",
+      "Menggantikan seluruh fungsi enkripsi endpoint",
+      "Menghubungkan workstation staf langsung ke internet tanpa NAT"
+    ],
+    "answerIndex": 0,
+    "explanation": "DMZ bertindak sebagai zona penyangga antara jaringan eksternal dan jaringan internal."
+  },
+  {
+    "id": "QZ-008",
+    "category": "Networking",
+    "question": "Apa fungsi utama DNSSEC pada sistem nama domain?",
+    "options": [
+      "Memvalidasi keaslian dan integritas respons DNS menggunakan tanda tangan kriptografis",
+      "Mengompresi ukuran paket gambar di situs web",
+      "Menggantikan alamat IPv6 menjadi IPv4",
+      "Menonaktifkan caching resolver DNS"
+    ],
+    "answerIndex": 0,
+    "explanation": "DNSSEC melindungi resolver dari pemalsuan data respons DNS."
+  },
+  {
+    "id": "QZ-009",
+    "category": "Security Awareness",
+    "question": "Tindakan terbaik saat menerima email mendesak yang meminta verifikasi password melalui tautan eksternal adalah...",
+    "options": [
+      "Tidak mengklik tautan, memverifikasi lewat kanal resmi internal, dan melaporkannya ke tim keamanan",
+      "Segera memasukkan kredensial lama dan baru agar akun tidak terblokir",
+      "Meneruskan tautan ke rekan kerja untuk dicoba bersama",
+      "Membalas email dengan nomor telepon pribadi"
+    ],
+    "answerIndex": 0,
+    "explanation": "Urgensi palsu adalah teknik rekayasa sosial untuk mendorong tindakan tergesa-gesa."
+  },
+  {
+    "id": "QZ-010",
+    "category": "Security Awareness",
+    "question": "Mengapa Multi-Factor Authentication (MFA) sangat efektif melindungi akun?",
+    "options": [
+      "Karena akses membutuhkan faktor verifikasi tambahan selain password",
+      "Karena membuat password tidak perlu lagi memiliki panjang minimal",
+      "Karena otomatis mengenkripsi seluruh harddisk lokal",
+      "Karena menghapus kebutuhan pembaruan sistem operasi"
+    ],
+    "answerIndex": 0,
+    "explanation": "MFA menambahkan lapisan verifikasi independen meskipun kredensial utama diketahui pihak lain."
+  },
+  {
+    "id": "QZ-011",
+    "category": "Security Awareness",
+    "question": "Apa praktik yang aman ketika menemukan media penyimpanan USB tanpa pemilik di area kantor?",
+    "options": [
+      "Menyerahkannya ke tim keamanan/IT tanpa mencolokkannya ke perangkat kerja",
+      "Mencolokkannya ke komputer kerja untuk melihat daftar file",
+      "Membawanya pulang untuk diformat dan dipakai pribadi",
+      "Menghubungkannya ke server produksi"
+    ],
+    "answerIndex": 0,
+    "explanation": "Media penyimpanan yang tidak dikenal dapat membawa muatan berbahaya atau merusak sistem."
+  },
+  {
+    "id": "QZ-012",
+    "category": "Digital Forensics",
+    "question": "Apa yang dimaksud dengan Chain of Custody dalam investigasi digital forensik?",
+    "options": [
+      "Dokumentasi kronologis yang mencatat pengumpulan, penyimpanan, dan perpindahan barang bukti",
+      "Daftar sandi administrator seluruh server perusahaan",
+      "Prosedur menghapus log lama secara otomatis",
+      "Metode mempercepat booting sistem operasi"
+    ],
+    "answerIndex": 0,
+    "explanation": "Chain of Custody menjaga keabsahan dan integritas barang bukti selama proses investigasi."
+  },
+  {
+    "id": "QZ-013",
+    "category": "Digital Forensics",
+    "question": "Mengapa nilai hash kriptografis (seperti SHA-256) dihitung saat mengakuisisi bukti digital?",
+    "options": [
+      "Untuk membuktikan bahwa salinan bukti identik dan tidak berubah sejak diakuisisi",
+      "Untuk memperkecil ukuran berkas image disk hingga 90%",
+      "Untuk menghapus metadata waktu pembuatan file",
+      "Untuk menyembunyikan bukti dari analis lain"
+    ],
+    "answerIndex": 0,
+    "explanation": "Perubahan satu bit saja akan mengubah nilai hash secara drastis sehingga integritas bukti mudah diverifikasi."
+  },
+  {
+    "id": "QZ-014",
+    "category": "Digital Forensics",
+    "question": "Menurut Order of Volatility, data mana yang sebaiknya dikumpulkan paling awal saat merespons sistem aktif?",
+    "options": [
+      "Isi memori aktif (RAM) dan koneksi jaringan yang sedang berjalan",
+      "Arsip cadangan pita magnetik di gudang offsite",
+      "Dokumentasi cetak kebijakan perusahaan",
+      "Log tahunan yang sudah diarsipkan di penyimpanan dingin"
+    ],
+    "answerIndex": 0,
+    "explanation": "Data di memori volatil (RAM) akan hilang segera jika daya sistem dimatikan."
+  },
+  {
+    "id": "QZ-015",
+    "category": "Malware",
+    "question": "Karakteristik utama yang membedakan Worm dari jenis malware lainnya adalah...",
+    "options": [
+      "Kemampuannya mereplikasi diri dan menyebar otomatis melalui jaringan tanpa interaksi pengguna",
+      "Hanya menampilkan iklan banner di browser",
+      "Selalu menyamar sebagai driver printer resmi tanpa fungsi jaringan",
+      "Hanya bekerja pada media penyimpanan optik"
+    ],
+    "answerIndex": 0,
+    "explanation": "Worm memanfaatkan kerentanan atau konfigurasi jaringan untuk menyebar secara mandiri antar host."
+  },
+  {
+    "id": "QZ-016",
+    "category": "Malware",
+    "question": "Apa perilaku khas dari Ransomware pada sistem yang terdampak?",
+    "options": [
+      "Mengenkripsi berkas pengguna atau sistem sehingga tidak dapat diakses tanpa kunci pemulihan",
+      "Meningkatkan kecepatan pembacaan basis data secara otomatis",
+      "Menambahkan ekstensi pemblokir iklan pada browser",
+      "Menghapus duplikat foto untuk menghemat ruang"
+    ],
+    "answerIndex": 0,
+    "explanation": "Ransomware mengganggu ketersediaan data melalui enkripsi tidak sah; backup terisolasi adalah pertahanan kuncinya."
+  },
+  {
+    "id": "QZ-017",
+    "category": "Malware",
+    "question": "Mengapa sebuah Trojan sering berhasil dijalankan oleh pengguna?",
+    "options": [
+      "Karena menyamar sebagai perangkat lunak atau dokumen yang tampak sah dan bermanfaat",
+      "Karena selalu meminta izin administrator secara eksplisit dengan peringatan merah",
+      "Karena hanya berjalan saat komputer dalam mode mati",
+      "Karena tidak memerlukan media distribusi apa pun"
+    ],
+    "answerIndex": 0,
+    "explanation": "Trojan mengandalkan penyamaran fungsi untuk mengelabui pengguna."
+  },
+  {
+    "id": "QZ-018",
+    "category": "Cloud Security",
+    "question": "Dalam Shared Responsibility Model pada layanan cloud, aspek mana yang umumnya tetap menjadi tanggung jawab pelanggan?",
+    "options": [
+      "Konfigurasi identitas & akses (IAM), klasifikasi data, serta aturan keamanan aplikasi pelanggan",
+      "Keamanan fisik gedung pusat data milik penyedia cloud",
+      "Pemeliharaan pendingin ruangan dan generator listrik datacenter",
+      "Penggantian perangkat keras fisik server host hypervisor"
+    ],
+    "answerIndex": 0,
+    "explanation": "Penyedia mengamankan infrastruktur cloud, sementara pelanggan mengamankan data, identitas, dan konfigurasi di dalamnya."
+  },
+  {
+    "id": "QZ-019",
+    "category": "Cloud Security",
+    "question": "Apa praktik terbaik untuk mencegah kebocoran data pada layanan penyimpanan objek cloud (seperti S3/Blob)?",
+    "options": [
+      "Menonaktifkan akses publik secara default, menerapkan enkripsi, dan membatasi kebijakan IAM",
+      "Mengatur semua bucket menjadi Public Read agar mudah diakses",
+      "Menyimpan kunci akses API di dalam kode sumber publik",
+      "Menonaktifkan pencatatan log akses penyimpanan"
+    ],
+    "answerIndex": 0,
+    "explanation": "Sebagian besar kebocoran penyimpanan cloud berasal dari kesalahan konfigurasi izin akses publik."
+  },
+  {
+    "id": "QZ-020",
+    "category": "Risk Management",
+    "question": "Apa yang dimaksud dengan Residual Risk (Risiko Sisa)?",
+    "options": [
+      "Tingkat risiko yang masih tersisa setelah kontrol keamanan diterapkan",
+      "Risiko awal sebelum kontrol apa pun diidentifikasi",
+      "Biaya pembelian perangkat lunak antivirus tahunan",
+      "Jumlah tiket insiden yang ditutup oleh SOC"
+    ],
+    "answerIndex": 0,
+    "explanation": "Tidak ada kontrol yang menghilangkan 100% risiko; manajemen harus memahami dan menyetujui risiko sisa."
+  },
+  {
+    "id": "QZ-021",
+    "category": "Risk Management",
+    "question": "Apa perbedaan antara RTO (Recovery Time Objective) dan RPO (Recovery Point Objective)?",
+    "options": [
+      "RTO adalah batas waktu pemulihan layanan, sedangkan RPO adalah batas toleransi kehilangan data berdasarkan waktu backup terakhir",
+      "RTO mengukur kapasitas RAM server, sedangkan RPO mengukur bandwidth jaringan",
+      "RTO berlaku hanya untuk firewall, sedangkan RPO berlaku untuk email",
+      "Keduanya merupakan metrik kecepatan prosesor"
+    ],
+    "answerIndex": 0,
+    "explanation": "RTO menentukan seberapa cepat sistem harus kembali aktif; RPO menentukan seberapa mutakhir data harus dipulihkan."
+  },
+  {
+    "id": "QZ-022",
+    "category": "Threat Intelligence",
+    "question": "Apa tujuan utama pemanfaatan Cyber Threat Intelligence (CTI) bagi tim SOC?",
+    "options": [
+      "Memperkaya konteks deteksi, memprioritaskan ancaman yang relevan, dan meningkatkan kesiapsiagaan pertahanan",
+      "Menggantikan seluruh kebutuhan pembaruan perangkat lunak",
+      "Menghapus kebijakan tata kelola risiko perusahaan",
+      "Mengurangi jumlah pencadangan data harian"
+    ],
+    "answerIndex": 0,
+    "explanation": "CTI mengubah data ancaman mentah menjadi informasi yang dapat ditindaklanjuti untuk memperkuat pertahanan."
+  },
+  {
+    "id": "QZ-023",
+    "category": "Threat Intelligence",
+    "question": "Manakah contoh Indicators of Compromise (IoC) yang umum dipantau secara defensif?",
+    "options": [
+      "Hash berkas berbahaya yang terverifikasi, domain berbahaya, dan alamat IP anomali",
+      "Jadwal cuti tahunan karyawan",
+      "Daftar inventaris kursi ruang rapat",
+      "Warna tema antarmuka aplikasi perkantoran"
+    ],
+    "answerIndex": 0,
+    "explanation": "IoC membantu tim SOC mendeteksi dan memblokir aktivitas berbahaya yang diketahui."
+  },
+  {
+    "id": "QZ-024",
+    "category": "Threat Intelligence",
+    "question": "Mengapa berbagi informasi ancaman melalui komunitas ISAC atau CERT bermanfaat?",
+    "options": [
+      "Mempercepat deteksi dini pola kampanye ancaman lintas organisasi di sektor serupa",
+      "Membuka kredensial internal perusahaan ke publik",
+      "Menghilangkan kebutuhan pemantauan SIEM internal",
+      "Mengurangi standar enkripsi komunikasi"
+    ],
+    "answerIndex": 0,
+    "explanation": "Kolaborasi pertahanan kolektif membantu organisasi mengantisipasi ancaman sebelum berdampak luas."
+  }
+]
