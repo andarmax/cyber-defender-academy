@@ -1,0 +1,702 @@
+[
+  {
+    "id": "MSN-001",
+    "title": "Invoice Palsu dari Vendor Mirip",
+    "category": "Phishing Detection",
+    "difficulty": "Intern",
+    "briefing": "Staf keuangan menerima email tagihan mendesak dari alamat `billing@vendor-pay-id.example`, padahal domain resmi vendor adalah `vendorpay.co.id`.",
+    "artifact": "From: billing@vendor-pay-id.example\nSubject: FINAL NOTICE: Overdue Invoice #INV-9941\nLink: http://sim-verify-billing.example/login",
+    "options": [
+      { "text": "Laporkan sebagai phishing, blokir domain/tautan di gateway, dan konfirmasi via kontak resmi vendor", "correct": true },
+      { "text": "Unduh lampiran dan masukkan kredensial email kantor untuk memeriksa tagihan", "correct": false },
+      { "text": "Teruskan email ke seluruh divisi agar semua orang waspada", "correct": false }
+    ],
+    "explanation": "Typosquatting domain dan tautan login eksternal adalah ciri klasik phishing. Selalu verifikasi melalui jalur komunikasi resmi yang sudah tervalidasi."
+  },
+  {
+    "id": "MSN-002",
+    "title": "Undangan Rapat Darurat HRIS",
+    "category": "Phishing Detection",
+    "difficulty": "Intern",
+    "briefing": "Karyawan menerima email bertajuk 'Pembaruan Gaji & Tunjangan' yang meminta login ulang melalui halaman eksternal tidak dikenal.",
+    "artifact": "From: hr-portal-update@example-alert.org\nSubject: Konfirmasi Rekening Karyawan Sebelum Jumat",
+    "options": [
+      { "text": "Arahkan pengguna membuka portal HRIS resmi via bookmark/intranet dan laporkan ke tim keamanan", "correct": true },
+      { "text": "Minta karyawan menonaktifkan antivirus sementara agar halaman terbuka", "correct": false },
+      { "text": "Balas email dengan nomor induk karyawan dan tanggal lahir", "correct": false }
+    ],
+    "explanation": "Jangan pernah mengakses halaman login sensitif dari tautan email yang mencurigakan; gunakan alamat resmi internal."
+  },
+  {
+    "id": "MSN-003",
+    "title": "Pesan 'Reset Password Wajib' dari IT",
+    "category": "Phishing Detection",
+    "difficulty": "Intern",
+    "briefing": "Sebuah email mengklaim akun akan dihapus dalam 30 menit jika tidak mengisi formulir pemulihan.",
+    "artifact": "X-Mailer: BulkSimMailer 1.0\nReturn-Path: bounce@sim-mail-relay.net",
+    "options": [
+      { "text": "Verifikasi ke helpdesk internal dan karantina pesan di email gateway", "correct": true },
+      { "text": "Isi password lama dan baru pada formulir tautan tersebut", "correct": false },
+      { "text": "Hapus tanpa melapor agar tidak merepotkan SOC", "correct": false }
+    ],
+    "explanation": "Tekanan waktu yang ekstrem (30 menit) dirancang untuk memicu kelalaian pengguna. Pelaporan membantu pemblokiran kampanye secara luas."
+  },
+  {
+    "id": "MSN-004",
+    "title": "Notifikasi Paket Kurir Tidak Terkirim",
+    "category": "Phishing Detection",
+    "difficulty": "Intern",
+    "briefing": "Karyawan di bagian resepsionis mendapat email notifikasi pengiriman paket berisi tautan unduh resi.",
+    "artifact": "Subject: Delivery Failed - Tracking #SIM88210\nAttachment: Resi_Pengiriman.html",
+    "options": [
+      { "text": "Blokir lampiran HTML mencurigakan dan edukasi staf untuk mengecek nomor resi di situs resmi", "correct": true },
+      { "text": "Buka file HTML di browser kerja untuk melihat isinya", "correct": false },
+      { "text": "Izinkan ekstensi .html pada email gateway", "correct": false }
+    ],
+    "explanation": "Berkas .html sebagai lampiran email sering digunakan untuk menyamarkan formulir tiruan; memblokir dan mengedukasi staf adalah langkah defensif tepat."
+  },
+  {
+    "id": "MSN-005",
+    "title": "Pemberitahuan Kebijakan Keamanan Palsu",
+    "category": "Phishing Detection",
+    "difficulty": "Analyst",
+    "briefing": "Email menyamar sebagai tim legal meminta persetujuan dokumen melalui tautan berbagi berkas tak terverifikasi.",
+    "artifact": "From: legal-compliance@doc-share-sim.example\nSubject: Tanda Tangan Kebijakan Baru",
+    "options": [
+      { "text": "Periksa keaslian pesan dengan tim legal internal dan periksa reputasi domain pengirim", "correct": true },
+      { "text": "Setujui dokumen tanpa membaca detail pengirim", "correct": false },
+      { "text": "Bagikan tautan ke grup publik", "correct": false }
+    ],
+    "explanation": "Penyamaran otoritas (seperti Legal atau HR) umum dipakai pada spear phishing; verifikasi lintas kanal mencegah kebocoran data."
+  },
+  {
+    "id": "MSN-006",
+    "title": "Kegagalan Validasi SPF & DKIM",
+    "category": "Email Investigation",
+    "difficulty": "Intern",
+    "briefing": "Email mengklaim berasal dari domain mitra bisnis, namun header menunjukkan SPF fail dan DKIM signature missing.",
+    "artifact": "Authentication-Results: spf=fail (sender IP is not authorized) dkim=none dmarc=fail",
+    "options": [
+      { "text": "Tandai sebagai spoofing/suspicious sesuai kebijakan DMARC dan hubungi mitra lewat kanal resmi", "correct": true },
+      { "text": "Tambahkan IP pengirim ke daftar putih (allowlist) secara otomatis", "correct": false },
+      { "text": "Abaikan hasil autentikasi header email", "correct": false }
+    ],
+    "explanation": "Kegagalan SPF, DKIM, dan DMARC menandakan pengirim tidak terotorisasi mewakili domain tersebut."
+  },
+  {
+    "id": "MSN-007",
+    "title": "Ketidaksesuaian Return-Path dan From",
+    "category": "Email Investigation",
+    "difficulty": "Intern",
+    "briefing": "Header `From` menampilkan nama eksekutif perusahaan, tetapi `Return-Path` mengarah ke layanan mail eksternal.",
+    "artifact": "From: Direksi Utama <direksi@perusahaan.co.id>\nReturn-Path: <exec-reply@external-sim-host.org>",
+    "options": [
+      { "text": "Investigasi header lengkap, blokir pola spoofing, dan beri peringatan kepada penerima", "correct": true },
+      { "text": "Anggap sah karena nama tampilan sesuai dengan direksi", "correct": false },
+      { "text": "Matikan filter anti-spoofing pada mail server", "correct": false }
+    ],
+    "explanation": "Display name spoofing memanfaatkan kepercayaan pada nama pejabat; pemeriksaan header mengungkap asal pengiriman sebenarnya."
+  },
+  {
+    "id": "MSN-008",
+    "title": "Anomali Reply-To pada Thread Tagihan",
+    "category": "Email Investigation",
+    "difficulty": "Analyst",
+    "briefing": "Pada percakapan email tagihan, header `Reply-To` diubah ke alamat domain berbeda dari pengirim awal.",
+    "artifact": "From: finance@mitra-resmi.co.id\nReply-To: settlement-desk@mitra-refund-sim.com",
+    "options": [
+      { "text": "Hentikan proses pembayaran, audit riwayat thread, dan verifikasi nomor rekening via kontak resmi", "correct": true },
+      { "text": "Lanjutkan transfer dana sesuai alamat pada Reply-To", "correct": false },
+      { "text": "Ubah konfigurasi email server agar mengabaikan Reply-To", "correct": false }
+    ],
+    "explanation": "Manipulasi Reply-To sering dimanfaatkan untuk mengalihkan balasan atau instruksi finansial ke pihak tak terverifikasi."
+  },
+  {
+    "id": "MSN-009",
+    "title": "Lonjakan Email Keluar dari Satu Akun",
+    "category": "Email Investigation",
+    "difficulty": "Analyst",
+    "briefing": "Log mail server mencatat satu akun staf mengirim ratusan email eksternal dalam 10 menit di luar jam kerja.",
+    "artifact": "MAIL_LOG: User=staf_marketing Sent=420 msgs in 10m | Dest=External-Domains",
+    "options": [
+      { "text": "Amankan sesi akun, reset kredensial, aktifkan MFA, dan periksa aturan forwarding/delegasi", "correct": true },
+      { "text": "Naikkan kuota pengiriman email akun tersebut", "correct": false },
+      { "text": "Hapus log pengiriman agar tidak memenuhi penyimpanan", "correct": false }
+    ],
+    "explanation": "Lonjakan pengiriman mendadak merupakan indikator kuat akun terkompromi; pengamanan akun dan audit aturan mail sangat penting."
+  },
+  {
+    "id": "MSN-010",
+    "title": "Analisis Header Received Hop",
+    "category": "Email Investigation",
+    "difficulty": "Senior / Architect",
+    "briefing": "Sebuah email internal tampak melewati relay asing sebelum masuk ke inbox perusahaan.",
+    "artifact": "Received: from sim-relay-04.example.net by mx.perusahaan.co.id with ESMTPS",
+    "options": [
+      { "text": "Lacak jalur hop header, periksa konektor mail, dan perketat aturan autentikasi domain internal", "correct": true },
+      { "text": "Biarkan relay eksternal memproses email internal tanpa batasan", "correct": false },
+      { "text": "Nonaktifkan TLS pada koneksi mail server", "correct": false }
+    ],
+    "explanation": "Membaca baris Received dari bawah ke atas membantu memetakan rute asli email dan mendeteksi relay tidak sah."
+  },
+  {
+    "id": "MSN-011",
+    "title": "Penggunaan Password Default pada Perangkat",
+    "category": "Password Security",
+    "difficulty": "Intern",
+    "briefing": "Ditemukan perangkat jaringan uji coba yang masih memakai kredensial bawaan pabrik.",
+    "artifact": "ASSET_AUDIT: Device=LAB-AP-02 | Auth=Default-Factory-Creds | Status=Active",
+    "options": [
+      { "text": "Ganti segera ke kredensial kuat yang unik, simpan di password manager, dan aktifkan MFA", "correct": true },
+      { "text": "Catat password default di papan tulis ruang server", "correct": false },
+      { "text": "Biarkan saja karena berada di ruangan terkunci", "correct": false }
+    ],
+    "explanation": "Kredensial default mudah ditebak dan terdokumentasi secara publik; penggantian kredensial dan MFA adalah standar dasar."
+  },
+  {
+    "id": "MSN-012",
+    "title": "Kebiasaan Password Reuse Antar Layanan",
+    "category": "Password Security",
+    "difficulty": "Intern",
+    "briefing": "Survei internal menunjukkan banyak karyawan memakai password yang sama untuk akun email kerja dan layanan eksternal.",
+    "artifact": "POLICY_SURVEY: Password Reuse Rate = 64% across corporate & personal accounts",
+    "options": [
+      { "text": "Edukasi penggunaan password unik per layanan, sediakan password manager perusahaan, dan wajibkan MFA", "correct": true },
+      { "text": "Izinkan password pendek 6 karakter agar mudah diingat", "correct": false },
+      { "text": "Kirim pengingat password via email plaintext", "correct": false }
+    ],
+    "explanation": "Password reuse memperbesar dampak jika satu layanan eksternal mengalami kebocoran data; MFA dan password unik memutus rantai risiko."
+  },
+  {
+    "id": "MSN-013",
+    "title": "Penerapan MFA Tahan Phishing",
+    "category": "Password Security",
+    "difficulty": "Analyst",
+    "briefing": "Tim keamanan mengevaluasi peningkatan keamanan login VPN dan portal cloud perusahaan.",
+    "artifact": "IAM_REPORT: Legacy SMS OTP vs Authenticator App / FIDO2 Passkey adoption",
+    "options": [
+      { "text": "Dorong adopsi authenticator app / FIDO2 dan terapkan number matching pada notifikasi MFA", "correct": true },
+      { "text": "Menghapus MFA demi kenyamanan login sekali klik", "correct": false },
+      { "text": "Menggunakan PIN 4 digit yang sama untuk semua staf", "correct": false }
+    ],
+    "explanation": "Autentikator modern dan number matching membantu mencegah kelelahan persetujuan notifikasi (MFA fatigue)."
+  },
+  {
+    "id": "MSN-014",
+    "title": "Kebijakan Passphrase vs Kompleksitas Kaku",
+    "category": "Password Security",
+    "difficulty": "Analyst",
+    "briefing": "Kebijakan lama mendorong password rumit tetapi pendek (8 karakter) yang sering ditulis di kertas tempel.",
+    "artifact": "IAM_POLICY: MinLength=8 vs Passphrase>=14 chars + Breach Screening",
+    "options": [
+      { "text": "Perbarui kebijakan ke passphrase panjang (minimal 12-14+ karakter), blokir password bocor umum, dan wajibkan MFA", "correct": true },
+      { "text": "Wajibkan rotasi password setiap 7 hari tanpa MFA", "correct": false },
+      { "text": "Simpan daftar password admin di spreadsheet bersama", "correct": false }
+    ],
+    "explanation": "Panjang kredensial dan penyaringan password yang sudah terekspos lebih efektif dibanding rotasi paksa jangka sangat pendek."
+  },
+  {
+    "id": "MSN-015",
+    "title": "Akun Layanan dengan Hak Berlebihan",
+    "category": "Password Security",
+    "difficulty": "Senior / Architect",
+    "briefing": "Audit IAM menemukan akun servis pelaporan memiliki hak akses administrator penuh pada sistem produksi.",
+    "artifact": "IAM_AUDIT: svc_report | Role=Domain-Admin | InteractiveLogin=Enabled",
+    "options": [
+      { "text": "Terapkan Least Privilege, cabut hak admin berlebih, rotasi rahasia secara aman, dan batasi sumber akses", "correct": true },
+      { "text": "Pertahankan hak admin agar tidak muncul error izin saat skrip berjalan", "correct": false },
+      { "text": "Bagikan kredensial akun servis ke seluruh anggota tim", "correct": false }
+    ],
+    "explanation": "Prinsip Least Privilege membatasi potensi kerusakan jika sebuah akun servis mengalami gangguan atau kesalahan konfigurasi."
+  },
+  {
+    "id": "MSN-016",
+    "title": "Enkripsi Massal Berkas di Folder Bersama",
+    "category": "Malware Identification",
+    "difficulty": "Analyst",
+    "briefing": "Sistem deteksi perilaku melaporkan perubahan ekstensi berkas secara cepat dan muncul catatan instruksi pemulihan.",
+    "artifact": "EDR_ALERT: Rapid file rename (.locked_sim) + Ransom note created in /shared/finance",
+    "options": [
+      { "text": "Identifikasi sebagai indikasi Ransomware, isolasi host dari jaringan, dan aktifkan prosedur Incident Response & Backup", "correct": true },
+      { "text": "Identifikasi sebagai Adware dan biarkan proses berjalan sampai selesai", "correct": false },
+      { "text": "Restart server berulang kali tanpa mengisolasi jaringan", "correct": false }
+    ],
+    "explanation": "Enkripsi berkas massal disertai catatan pemulihan adalah ciri khas Ransomware; isolasi cepat menahan penyebaran."
+  },
+  {
+    "id": "MSN-017",
+    "title": "Aplikasi Utilitas Palsu dengan Fungsi Tersembunyi",
+    "category": "Malware Identification",
+    "difficulty": "Intern",
+    "briefing": "Pengguna mengunduh alat konverter PDF gratis dari sumber tidak resmi yang diam-diam membuka koneksi mencurigakan.",
+    "artifact": "PROC_MON: PDFConverterSim.exe -> spawns hidden background worker",
+    "options": [
+      { "text": "Identifikasi sebagai Trojan, hentikan proses, karantina berkas, dan audit sistem", "correct": true },
+      { "text": "Identifikasi sebagai Worm dan abaikan asal unduhan", "correct": false },
+      { "text": "Jadikan aplikasi tersebut sebagai standar perusahaan", "correct": false }
+    ],
+    "explanation": "Trojan menyamar sebagai program yang tampak bermanfaat untuk mengelabui pengguna agar menjalankannya."
+  },
+  {
+    "id": "MSN-018",
+    "title": "Penyebaran Otomatis Lintas Subnet Internal",
+    "category": "Malware Identification",
+    "difficulty": "Analyst",
+    "briefing": "Sensor jaringan mendeteksi satu workstation melakukan pemindaian dan replikasi paket otomatis ke banyak host internal.",
+    "artifact": "NDR_ALERT: Automated lateral propagation attempt across 10.10.20.0/24 hosts",
+    "options": [
+      { "text": "Identifikasi sebagai perilaku Worm, isolasi segmen terdampak, dan tutup celah layanan yang terekspos", "correct": true },
+      { "text": "Identifikasi sebagai Adware browser", "correct": false },
+      { "text": "Hubungkan subnet tersebut ke jaringan publik untuk memantau lalu lintas", "correct": false }
+    ],
+    "explanation": "Worm mampu mereplikasi diri dan menyebar antar sistem jaringan; segmentasi dan patching cepat mencegah wabah meluas."
+  },
+  {
+    "id": "MSN-019",
+    "title": "Perekaman Aktivitas Latar Belakang Diam-Diam",
+    "category": "Malware Identification",
+    "difficulty": "Analyst",
+    "briefing": "Analisis endpoint menemukan modul tersembunyi yang memantau aktivitas input/sesi dan mengirim paket kecil secara berkala.",
+    "artifact": "ENDPOINT_SCAN: Hidden telemetry hook + periodic outbound beacon to sim-collector.example",
+    "options": [
+      { "text": "Identifikasi sebagai Spyware, bersihkan modul berbahaya, periksa kredensial terkait, dan perketat EDR", "correct": true },
+      { "text": "Identifikasi sebagai pembaruan sistem operasi resmi", "correct": false },
+      { "text": "Biarkan modul berjalan untuk menghemat ruang disk", "correct": false }
+    ],
+    "explanation": "Spyware berfokus pada pengumpulan informasi secara diam-diam tanpa izin; pembersihan dan evaluasi akses akun wajib dilakukan."
+  },
+  {
+    "id": "MSN-020",
+    "title": "Pop-up Iklan Berlebihan & Pembajakan Beranda",
+    "category": "Malware Identification",
+    "difficulty": "Intern",
+    "briefing": "Browser pada laptop staf terus memunculkan iklan agresif dan mengubah mesin pencari bawaan setelah instalasi ekstensi.",
+    "artifact": "BROWSER_AUDIT: Unauthorized extension 'FreeCouponBoost' injecting ad banners",
+    "options": [
+      { "text": "Identifikasi sebagai Adware, hapus ekstensi mencurigakan, reset pengaturan browser, dan terapkan kebijakan ekstensi", "correct": true },
+      { "text": "Identifikasi sebagai Ransomware dan matikan seluruh datacenter", "correct": false },
+      { "text": "Pasang lebih banyak ekstensi iklan untuk menimpa pop-up", "correct": false }
+    ],
+    "explanation": "Adware menampilkan iklan atau mengubah perilaku browser; pengelolaan kebijakan ekstensi browser mencegah instalasi tidak sah."
+  },
+  {
+    "id": "MSN-021",
+    "title": "Fase Containment pada Insiden Endpoint",
+    "category": "Incident Response",
+    "difficulty": "Analyst",
+    "briefing": "Sebuah host terdeteksi menjalankan skrip mencurigakan. Anda berada pada tahap awal penanganan insiden.",
+    "artifact": "IR_PHASE: Detection -> Containment -> Eradication -> Recovery -> Lessons Learned",
+    "options": [
+      { "text": "Lakukan Containment (isolasi jaringan host) sambil mempertahankan bukti forensik sebelum pembersihan", "correct": true },
+      { "text": "Langsung format harddisk tanpa mencatat bukti atau kronologi", "correct": false },
+      { "text": "Tunggu hingga akhir bulan untuk meninjau alert", "correct": false }
+    ],
+    "explanation": "Containment membatasi penyebaran ancaman sementara bukti awal tetap terjaga untuk investigasi dan pemulihan."
+  },
+  {
+    "id": "MSN-022",
+    "title": "Eskalasi Insiden ke Tim CSIRT / Manajemen",
+    "category": "Incident Response",
+    "difficulty": "Analyst",
+    "briefing": "Insiden memengaruhi server aplikasi internal yang mendukung layanan operasional utama perusahaan.",
+    "artifact": "SEVERITY: HIGH | Impacted Service: Internal ERP Portal | Status: Investigating",
+    "options": [
+      { "text": "Eskalasi sesuai matriks severity SOP, buka incident ticket terstruktur, dan perbarui status secara berkala", "correct": true },
+      { "text": "Sembunyikan insiden karena khawatir mendapat teguran", "correct": false },
+      { "text": "Umumkan detail teknis sensitif ke forum publik eksternal", "correct": false }
+    ],
+    "explanation": "Eskalasi tepat waktu memastikan sumber daya dan keputusan manajemen berjalan sesuai tingkat dampak insiden."
+  },
+  {
+    "id": "MSN-023",
+    "title": "Eradication & Verifikasi Kebersihan Sistem",
+    "category": "Incident Response",
+    "difficulty": "Senior / Architect",
+    "briefing": "Setelah mengisolasi host, Anda perlu memastikan akar penyebab dan persistensi tidak tersisa sebelum pemulihan.",
+    "artifact": "IR_CHECKLIST: Remove malicious persistence, patch root vulnerability, verify clean state",
+    "options": [
+      { "text": "Hapus jalur persistensi, tambal celah penyebab, lakukan pemindaian ulang, lalu pulihkan layanan secara bertahap", "correct": true },
+      { "text": "Sambungkan kembali host ke jaringan tanpa memperbaiki celah awal", "correct": false },
+      { "text": "Hanya menghapus satu berkas tanpa memeriksa scheduled task/service", "correct": false }
+    ],
+    "explanation": "Jika akar penyebab atau mekanisme persistensi tidak dibersihkan, ancaman berpotensi muncul kembali."
+  },
+  {
+    "id": "MSN-024",
+    "title": "Lessons Learned & Post-Incident Review",
+    "category": "Incident Response",
+    "difficulty": "Senior / Architect",
+    "briefing": "Insiden simulasi telah berhasil ditangani dan layanan kembali normal.",
+    "artifact": "POST_MORTEM: MTTD=14m | MTTR=48m | Action Items Pending",
+    "options": [
+      { "text": "Susun laporan pasca-insiden tanpa menyalahkan individu, perbarui runbook SOC, dan perbaiki deteksi", "correct": true },
+      { "text": "Tutup tiket insiden tanpa evaluasi aturan deteksi atau SOP", "correct": false },
+      { "text": "Hapus seluruh catatan timeline insiden", "correct": false }
+    ],
+    "explanation": "Post-incident review memperkuat ketahanan organisasi jangka panjang melalui perbaikan proses, deteksi, dan runbook."
+  },
+  {
+    "id": "MSN-025",
+    "title": "Isolasi Sesi Akun Terindikasi Kompromi",
+    "category": "Incident Response",
+    "difficulty": "Intern",
+    "briefing": "Login tercatat dari lokasi tidak wajar beberapa menit setelah login sah dari kantor pusat.",
+    "artifact": "IAM_ALERT: Impossible travel pattern detected on user account 'ops_analyst'",
+    "options": [
+      { "text": "Cabut sesi aktif, nonaktifkan/reset kredensial sementara, dan verifikasi langsung dengan pemilik akun", "correct": true },
+      { "text": "Biarkan sesi aktif tetap berjalan selama 24 jam", "correct": false },
+      { "text": "Berikan hak akses tambahan untuk menguji respons sistem", "correct": false }
+    ],
+    "explanation": "Mencabut token/sesi aktif dan mereset kredensial menghentikan akses tidak sah secara langsung."
+  },
+  {
+    "id": "MSN-026",
+    "title": "Penilaian Risiko Aset Data Pelanggan",
+    "category": "Risk Assessment",
+    "difficulty": "Analyst",
+    "briefing": "Sebuah basis data menyimpan data sensitif pelanggan dengan kemungkinan ancaman sedang dan dampak tinggi.",
+    "artifact": "RISK_MATRIX: Likelihood=Medium (3/5) | Impact=Critical (5/5) | Control=Partial",
+    "options": [
+      { "text": "Kategorikan sebagai Risiko Tinggi/Kritis, prioritaskan kontrol mitigasi (enkripsi, akses ketat, audit), dan pantau berkala", "correct": true },
+      { "text": "Kategorikan sebagai Risiko Rendah karena belum pernah terjadi insiden", "correct": false },
+      { "text": "Abaikan penilaian risiko hingga ada audit eksternal tahun depan", "correct": false }
+    ],
+    "explanation": "Penilaian risiko menggabungkan kemungkinan dan dampak; dampak tinggi pada data sensitif menuntut prioritas mitigasi kuat."
+  },
+  {
+    "id": "MSN-027",
+    "title": "Opsi Perlakuan Risiko (Risk Treatment)",
+    "category": "Risk Assessment",
+    "difficulty": "Analyst",
+    "briefing": "Sebuah aplikasi lama berisiko tinggi dan sudah tidak lagi digunakan secara aktif oleh unit bisnis.",
+    "artifact": "ASSET_STATUS: LegacyApp-v1 | Usage=0% | Known Unpatched Flaws=High",
+    "options": [
+      { "text": "Terapkan Risk Avoidance dengan menonaktifkan/mendecommissioning aplikasi dan mengarsipkan datanya secara aman", "correct": true },
+      { "text": "Terapkan Risk Acceptance tanpa batas waktu pada aplikasi yang tidak terpakai", "correct": false },
+      { "text": "Biarkan aplikasi tetap aktif di jaringan publik", "correct": false }
+    ],
+    "explanation": "Menghapus aset yang tidak lagi dibutuhkan (Risk Avoidance / Decommissioning) menghilangkan permukaan serangan secara permanen."
+  },
+  {
+    "id": "MSN-028",
+    "title": "Risiko Pihak Ketiga (Third-Party Vendor)",
+    "category": "Risk Assessment",
+    "difficulty": "Senior / Architect",
+    "briefing": "Vendor penyedia layanan analitik akan terhubung ke API data internal perusahaan.",
+    "artifact": "VTP_REVIEW: Vendor requests broad read access to internal operational API",
+    "options": [
+      { "text": "Lakukan asesmen keamanan vendor, batasi scope API hanya pada data yang diperlukan, dan tetapkan kontrak keamanan", "correct": true },
+      { "text": "Berikan kunci API penuh tanpa batas waktu atau pembatasan scope", "correct": false },
+      { "text": "Lewati tinjauan keamanan karena vendor menawarkan harga murah", "correct": false }
+    ],
+    "explanation": "Keamanan rantai pasok dan pihak ketiga menuntut due diligence serta pembatasan akses minimum."
+  },
+  {
+    "id": "MSN-029",
+    "title": "Klasifikasi Data Sensitif vs Publik",
+    "category": "Risk Assessment",
+    "difficulty": "Intern",
+    "briefing": "Tim proyek hendak menyimpan dokumen internal rahasia pada repositori publik terbuka.",
+    "artifact": "DATA_CLASSIFICATION: Confidential Internal Architecture Doc -> Target: Public Repo",
+    "options": [
+      { "text": "Cegah publikasi, pindahkan ke penyimpanan internal terotorisasi, dan terapkan kontrol akses berbasis peran", "correct": true },
+      { "text": "Unggah ke repositori publik agar mudah diakses siapa saja", "correct": false },
+      { "text": "Ganti nama file menjadi 'draft_lama.txt' di folder publik", "correct": false }
+    ],
+    "explanation": "Mengganti nama file di lokasi publik tidak melindungi kerahasiaan data; klasifikasi data menentukan kontrol akses yang tepat."
+  },
+  {
+    "id": "MSN-030",
+    "title": "Dampak Bisnis (BIA) & RTO / RPO",
+    "category": "Risk Assessment",
+    "difficulty": "Senior / Architect",
+    "briefing": "Manajemen menanyakan target waktu pemulihan (RTO) untuk sistem pembayaran internal.",
+    "artifact": "BIA_PROFILE: Critical Payment System | Max Tolerable Downtime = 1 Hour",
+    "options": [
+      { "text": "Tetapkan RTO selaras dengan kebutuhan bisnis (misal <1 jam), uji prosedur failover, dan siapkan backup terverifikasi", "correct": true },
+      { "text": "Tetapkan RTO 30 hari untuk sistem transaksi kritis harian", "correct": false },
+      { "text": "Menentukan RTO tanpa berdiskusi dengan pemilik proses bisnis", "correct": false }
+    ],
+    "explanation": "RTO dan RPO harus selaras dengan Business Impact Analysis (BIA) dan diuji secara berkala."
+  },
+  {
+    "id": "MSN-031",
+    "title": "Keamanan Saat Bekerja di Wi-Fi Publik",
+    "category": "Security Awareness",
+    "difficulty": "Intern",
+    "briefing": "Karyawan bekerja jarak jauh dari kafe menggunakan jaringan Wi-Fi publik terbuka.",
+    "artifact": "REMOTE_WORK_CHECK: Unencrypted Public Hotspot detected",
+    "options": [
+      { "text": "Aktifkan VPN perusahaan terenkripsi, gunakan situs HTTPS, dan hindari transaksi sensitif tanpa proteksi", "correct": true },
+      { "text": "Matikan firewall host agar koneksi ke hotspot lebih cepat", "correct": false },
+      { "text": "Bagikan folder drive lokal ke seluruh jaringan Wi-Fi publik", "correct": false }
+    ],
+    "explanation": "Jaringan publik tidak tepercaya; VPN terenkripsi dan protokol aman melindungi lalu lintas data pengguna."
+  },
+  {
+    "id": "MSN-032",
+    "title": "Mengunci Layar (Screen Lock) Saat Meninggalkan Meja",
+    "category": "Security Awareness",
+    "difficulty": "Intern",
+    "briefing": "Observasi keamanan fisik menemukan beberapa workstation dibiarkan terbuka tanpa kunci layar saat staf beristirahat.",
+    "artifact": "PHYSICAL_AUDIT: 7 unlocked workstations observed in open office area",
+    "options": [
+      { "text": "Terapkan auto-lock singkat dan edukasi budaya mengunci layar (Win+L / Ctrl+Cmd+Q) setiap meninggalkan perangkat", "correct": true },
+      { "text": "Menonaktifkan lock screen agar tidak perlu mengetik ulang PIN", "correct": false },
+      { "text": "Menempelkan catatan password di monitor", "correct": false }
+    ],
+    "explanation": "Penguncian layar otomatis dan kebiasaan disiplin fisik mencegah akses langsung saat perangkat ditinggalkan."
+  },
+  {
+    "id": "MSN-033",
+    "title": "Kewaspadaan Social Engineering via Telepon",
+    "category": "Security Awareness",
+    "difficulty": "Intern",
+    "briefing": "Seorang penelepon mengaku sebagai teknisi dukungan eksternal dan meminta kode verifikasi yang baru dikirim ke ponsel staf.",
+    "artifact": "CALL_LOG: Caller requests 6-digit MFA/verification code for 'system maintenance'",
+    "options": [
+      { "text": "Jangan pernah memberikan kode verifikasi/OTP kepada siapa pun, tutup panggilan, dan laporkan ke tim keamanan", "correct": true },
+      { "text": "Bacakan kode verifikasi agar pemeliharaan cepat selesai", "correct": false },
+      { "text": "Minta penelepon mengirim ulang kode ke alamat email pribadi", "correct": false }
+    ],
+    "explanation": "Kode verifikasi/MFA bersifat rahasia dan tidak pernah diminta oleh staf dukungan yang sah."
+  },
+  {
+    "id": "MSN-034",
+    "title": "Penggunaan Perangkat Pribadi (BYOD) & Media Lepas",
+    "category": "Security Awareness",
+    "difficulty": "Analyst",
+    "briefing": "Staf ingin mencolokkan USB flash drive tidak dikenal yang ditemukan di area lobi ke komputer kantor.",
+    "artifact": "PERIPHERAL_EVENT: Unknown USB media found in lobby area",
+    "options": [
+      { "text": "Jangan colokkan media tidak dikenal ke perangkat kerja; serahkan ke tim keamanan untuk penanganan aman", "correct": true },
+      { "text": "Colokkan langsung untuk melihat siapa pemilik file di dalamnya", "correct": false },
+      { "text": "Salin seluruh isi USB ke server utama perusahaan", "correct": false }
+    ],
+    "explanation": "Media penyimpanan yang tidak diketahui asal-usulnya merupakan risiko keamanan fisik/endpoint yang harus ditangani sesuai prosedur."
+  },
+  {
+    "id": "MSN-035",
+    "title": "Program Pelatihan Kesadaran Keamanan Berkelanjutan",
+    "category": "Security Awareness",
+    "difficulty": "Analyst",
+    "briefing": "Program pelatihan keamanan hanya dilakukan sekali saat orientasi karyawan baru.",
+    "artifact": "AWARENESS_METRIC: Annual refresher = Off | Simulated phishing drills = None",
+    "options": [
+      { "text": "Selenggarakan pelatihan berkala yang relevan dengan peran, simulasi edukatif, dan ukur tren pelaporan", "correct": true },
+      { "text": "Menganggap pelatihan sekali seumur hidup sudah cukup selamanya", "correct": false },
+      { "text": "Menghukum staf secara publik tanpa materi pembelajaran", "correct": false }
+    ],
+    "explanation": "Ancaman terus berkembang sehingga security awareness harus berkelanjutan, kontekstual, dan berfokus pada pembelajaran."
+  },
+  {
+    "id": "MSN-036",
+    "title": "Prioritas Patch Berdasarkan Eksposur & Dampak",
+    "category": "Vulnerability Prioritization",
+    "difficulty": "Analyst",
+    "briefing": "Pemindai kerentanan menemukan dua temuan: kerentanan kritis pada server yang menghadap internet vs kerentanan sedang pada host internal terisolasi.",
+    "artifact": "VULN_SCAN: [A] Internet-Facing Web App (Critical, Active Exploit Intel) | [B] Isolated Lab Host (Medium)",
+    "options": [
+      { "text": "Prioritaskan [A] terlebih dahulu karena terekspos ke jaringan eksternal dan memiliki indikasi ancaman aktif", "correct": true },
+      { "text": "Abaikan [A] dan kerjakan hanya temuan berlabel 'Low' di jaringan internal", "correct": false },
+      { "text": "Tunda seluruh patch selama 6 bulan tanpa mitigasi kompensasi", "correct": false }
+    ],
+    "explanation": "Prioritisasi kerentanan efektif mempertimbangkan keterpaparan aset, tingkat keparahan, dan intelijen ancaman aktif."
+  },
+  {
+    "id": "MSN-037",
+    "title": "Mitigasi Sementara Saat Patch Belum Tersedia",
+    "category": "Vulnerability Prioritization",
+    "difficulty": "Senior / Architect",
+    "briefing": "Sebuah kerentanan baru diumumkan, namun patch resmi vendor baru akan dirilis beberapa hari lagi.",
+    "artifact": "ADVISORY: Vendor patch ETA = 72h | Compensating controls available at WAF & Firewall",
+    "options": [
+      { "text": "Terapkan kontrol kompensasi (aturan WAF/ACL, pembatasan akses, pemantauan ketat) lalu pasang patch resmi saat tersedia", "correct": true },
+      { "text": "Tidak melakukan apa pun hingga patch dirilis", "correct": false },
+      { "text": "Mematikan seluruh sistem pemantauan log", "correct": false }
+    ],
+    "explanation": "Compensating controls menekan risiko selama masa tunggu patch resmi dirilis dan diuji."
+  },
+  {
+    "id": "MSN-038",
+    "title": "Uji Patch di Staging Sebelum Produksi",
+    "category": "Vulnerability Prioritization",
+    "difficulty": "Analyst",
+    "briefing": "Patch keamanan siap diterapkan ke server aplikasi kritikal.",
+    "artifact": "CHANGE_MGMT: Critical App Server | Staging Env Available",
+    "options": [
+      { "text": "Uji patch di lingkungan staging, pastikan kompatibilitas aplikasi dan siapkan rencana rollback, lalu deploy terjadwal", "correct": true },
+      { "text": "Terapkan patch acak langsung ke produksi tanpa pengujian atau rollback plan", "correct": false },
+      { "text": "Menghapus seluruh konfigurasi aplikasi sebelum update", "correct": false }
+    ],
+    "explanation": "Pengujian di staging dan rencana rollback menjaga stabilitas layanan sambil menutup celah keamanan."
+  },
+  {
+    "id": "MSN-039",
+    "title": "Inventarisasi Aset untuk Akurasi Vulnerability Scan",
+    "category": "Vulnerability Prioritization",
+    "difficulty": "Analyst",
+    "briefing": "Pemindaian kerentanan tidak mencakup beberapa subdomain dan instance cloud baru.",
+    "artifact": "CMDB_GAP: 18 newly provisioned cloud instances missing from scanner target list",
+    "options": [
+      { "text": "Perbarui inventaris aset (CMDB) dan cakupan pemindaian secara otomatis agar tidak ada blind spot", "correct": true },
+      { "text": "Menganggap aset yang tidak tercantum di daftar tidak memiliki risiko", "correct": false },
+      { "text": "Menghentikan pemindaian kerentanan bulanan", "correct": false }
+    ],
+    "explanation": "Anda tidak dapat mengamankan aset yang tidak terinventarisasi; pembaruan inventaris menjaga cakupan pemindaian."
+  },
+  {
+    "id": "MSN-040",
+    "title": "SLA Perbaikan Berdasarkan Tingkat Keparahan",
+    "category": "Vulnerability Prioritization",
+    "difficulty": "Senior / Architect",
+    "briefing": "Organisasi belum memiliki SLA baku untuk menutup temuan kerentanan berisiko tinggi.",
+    "artifact": "GOVERNANCE_GAP: No defined remediation SLA for Critical/High findings",
+    "options": [
+      { "text": "Tetapkan SLA remediasi berbasis risiko (misal prioritas cepat untuk Critical/High) dan pantau kepatuhannya", "correct": true },
+      { "text": "Membiarkan tiket kerentanan terbuka tanpa batas waktu atau penanggung jawab", "correct": false },
+      { "text": "Menutup tiket tanpa verifikasi perbaikan", "correct": false }
+    ],
+    "explanation": "SLA yang jelas dan terukur memastikan temuan berisiko tinggi ditangani tepat waktu."
+  },
+  {
+    "id": "MSN-041",
+    "title": "Strategi Backup 3-2-1 & Isolasi",
+    "category": "Backup Recovery",
+    "difficulty": "Analyst",
+    "briefing": "Tim infrastruktur merancang ulang strategi pencadangan data penting perusahaan.",
+    "artifact": "BACKUP_DESIGN: 3 copies of data, 2 media types, 1 offsite, plus immutable/offline protection",
+    "options": [
+      { "text": "Terapkan prinsip 3-2-1 dengan salinan offsite dan perlindungan immutable/offline agar tidak mudah diubah", "correct": true },
+      { "text": "Menyimpan satu salinan backup di folder yang sama dengan data asli", "correct": false },
+      { "text": "Menghapus semua backup lama tanpa verifikasi integritas", "correct": false }
+    ],
+    "explanation": "Backup yang terisolasi dan immutable membantu menjamin ketersediaan data saat terjadi gangguan atau kerusakan sistem."
+  },
+  {
+    "id": "MSN-042",
+    "title": "Uji Restore Backup Secara Berkala",
+    "category": "Backup Recovery",
+    "difficulty": "Analyst",
+    "briefing": "Backup harian berjalan sukses menurut notifikasi, tetapi belum pernah diuji pemulihannya (restore) selama setahun.",
+    "artifact": "BACKUP_AUDIT: Last restore test = Never verified in production-like environment",
+    "options": [
+      { "text": "Jadwalkan uji restore berkala di lingkungan terisolasi untuk memastikan data dapat dipulihkan utuh dan tepat waktu", "correct": true },
+      { "text": "Mengasumsikan status 'success' pada log job berarti restore pasti berhasil", "correct": false },
+      { "text": "Membatalkan jadwal backup mingguan", "correct": false }
+    ],
+    "explanation": "Backup yang tidak pernah diuji pemulihannya berisiko gagal saat benar-benar dibutuhkan dalam situasi darurat."
+  },
+  {
+    "id": "MSN-043",
+    "title": "Pemulihan Layanan Setelah Gangguan Terkendali",
+    "category": "Backup Recovery",
+    "difficulty": "Senior / Architect",
+    "briefing": "Sistem file internal dipulihkan dari snapshot bersih setelah insiden berhasil diisolasi dan dibersihkan.",
+    "artifact": "RECOVERY_STEP: Clean snapshot selected -> Hash verified -> Staged restore",
+    "options": [
+      { "text": "Verifikasi integritas snapshot bersih, pulihkan ke lingkungan terkendali, cek log pasca-restore, lalu buka akses bertahap", "correct": true },
+      { "text": "Memulihkan snapshot yang tidak terverifikasi tanpa memeriksa tanggal atau integritasnya", "correct": false },
+      { "text": "Mengabaikan pemantauan setelah layanan kembali aktif", "correct": false }
+    ],
+    "explanation": "Verifikasi integritas dan pemulihan bertahap mencegah kembalinya masalah yang sama ke sistem produksi."
+  },
+  {
+    "id": "MSN-044",
+    "title": "Perlindungan Kredensial Akun Backup",
+    "category": "Backup Recovery",
+    "difficulty": "Senior / Architect",
+    "briefing": "Kredensial konsol backup menggunakan akun yang sama dengan domain administrator utama.",
+    "artifact": "BACKUP_IAM: Backup vault shares credential set with primary domain admin",
+    "options": [
+      { "text": "Pisahkan kredensial sistem backup dengan autentikasi kuat dan MFA terpisah", "correct": true },
+      { "text": "Membagikan password backup ke seluruh pengguna biasa", "correct": false },
+      { "text": "Menonaktifkan autentikasi pada konsol backup", "correct": false }
+    ],
+    "explanation": "Memisahkan kredensial backup mencegah kompromi satu sistem merambat ke infrastruktur cadangan."
+  },
+  {
+    "id": "MSN-045",
+    "title": "Dokumentasi Rencana Pemulihan Bencana (DRP)",
+    "category": "Backup Recovery",
+    "difficulty": "Intern",
+    "briefing": "Prosedur pemulihan hanya diketahui oleh satu administrator senior dan belum terdokumentasi.",
+    "artifact": "DOC_STATUS: DR Runbook = Missing / Tribal knowledge only",
+    "options": [
+      { "text": "Dokumentasikan runbook DRP secara jelas, mutakhir, dan mudah diakses oleh tim respons yang berwenang", "correct": true },
+      { "text": "Membiarkan prosedur hanya tersimpan di ingatan satu orang", "correct": false },
+      { "text": "Menyimpan dokumen penting di perangkat pribadi tanpa backup", "correct": false }
+    ],
+    "explanation": "Dokumentasi runbook yang terstruktur mempercepat respons tim saat terjadi kondisi darurat."
+  },
+  {
+    "id": "MSN-046",
+    "title": "Pola Kegagalan Login Berulang pada SSH/VPN",
+    "category": "Log Analysis",
+    "difficulty": "Intern",
+    "briefing": "Log autentikasi mencatat puluhan percobaan login gagal beruntun dari satu alamat IP eksternal simulasi.",
+    "artifact": "AUTH.LOG: Failed password for invalid user from 203.0.113.45 port 54122 (45 attempts in 2m)",
+    "options": [
+      { "text": "Terapkan rate-limiting / pemblokiran sementara di perimeter, pastikan autentikasi kunci/MFA aktif, dan pantau hasilnya", "correct": true },
+      { "text": "Menghapus baris log agar jumlah peringatan berkurang", "correct": false },
+      { "text": "Membuka akses tanpa autentikasi untuk IP tersebut", "correct": false }
+    ],
+    "explanation": "Pola kegagalan autentikasi berulang dapat diatasi dengan pembatasan laju, autentikasi kuat, dan pemantauan berkelanjutan."
+  },
+  {
+    "id": "MSN-047",
+    "title": "Sinkronisasi Waktu (NTP) pada Log Terdistribusi",
+    "category": "Log Analysis",
+    "difficulty": "Analyst",
+    "briefing": "Saat menyusun timeline insiden lintas firewall, web server, dan SIEM, jam pada satu server tertinggal 18 menit.",
+    "artifact": "LOG_CORRELATION: WebServer clock skew = -18m vs SIEM NTP master",
+    "options": [
+      { "text": "Aktifkan sinkronisasi NTP terpusat (UTC) pada seluruh server dan perangkat jaringan untuk akurasi korelasi log", "correct": true },
+      { "text": "Menyesuaikan jam secara manual tanpa sinkronisasi waktu jaringan", "correct": false },
+      { "text": "Mengabaikan perbedaan timestamp saat menyusun kronologi", "correct": false }
+    ],
+    "explanation": "Sinkronisasi waktu (NTP) sangat krusial agar urutan kejadian lintas log dapat direkonstruksi secara akurat."
+  },
+  {
+    "id": "MSN-048",
+    "title": "Deteksi Perubahan Konfigurasi Privileged",
+    "category": "Log Analysis",
+    "difficulty": "Analyst",
+    "briefing": "Audit log mencatat penambahan pengguna baru ke grup administrator sistem di luar jadwal perubahan resmi.",
+    "artifact": "AUDIT_LOG: Group 'admins' modified by 'temp_admin' at 03:12 UTC | ChangeTicket=NONE",
+    "options": [
+      { "text": "Segera investigasi perubahan tanpa tiket, tinjau otorisasi, kembalikan ke konfigurasi sah jika tidak valid, dan catat temuan", "correct": true },
+      { "text": "Mengabaikan perubahan hak akses administratif di luar jam kerja", "correct": false },
+      { "text": "Menonaktifkan audit log perubahan grup", "correct": false }
+    ],
+    "explanation": "Perubahan keanggotaan grup berhak akses tinggi di luar perubahan resmi harus segera diperiksa untuk mencegah eskalasi tidak sah."
+  },
+  {
+    "id": "MSN-049",
+    "title": "Korelasi Trafik DNS & Proxy Log",
+    "category": "Log Analysis",
+    "difficulty": "Senior / Architect",
+    "briefing": "Log DNS menunjukkan permintaan berulang ke subdomain acak panjang menuju satu domain simulasi tertentu.",
+    "artifact": "DNS_LOG: High-entropy subdomain queries to 'x92k1m.tunnel-sim.example' every 5s",
+    "options": [
+      { "text": "Korelasikan dengan log proxy/firewall, blokir domain simulasi berbahaya, dan periksa host sumber query", "correct": true },
+      { "text": "Menganggap query berulang otomatis sebagai trafik normal tanpa pemeriksaan", "correct": false },
+      { "text": "Menonaktifkan logging query DNS", "correct": false }
+    ],
+    "explanation": "Pola query DNS berfrekuensi tinggi dengan subdomain tidak wajar sering menjadi indikator komunikasi kanal terselubung (seperti DNS tunneling)."
+  },
+  {
+    "id": "MSN-050",
+    "title": "Retensi Log & Perlindungan Integritas Log",
+    "category": "Log Analysis",
+    "difficulty": "Senior / Architect",
+    "briefing": "Log keamanan hanya disimpan selama 24 jam secara lokal di server yang sama dengan aplikasi.",
+    "artifact": "LOG_POLICY: Retention=24h | Storage=Local disk only (no centralized SIEM forwarding)",
+    "options": [
+      { "text": "Kirimkan log secara real-time ke server log/SIEM terpusat dan terapkan periode retensi sesuai kebijakan & kepatuhan", "correct": true },
+      { "text": "Membiarkan log tertimpa setiap hari tanpa arsip atau pengiriman terpusat", "correct": false },
+      { "text": "Memberikan izin hapus file log kepada semua akun standar", "correct": false }
+    ],
+    "explanation": "Pengiriman log terpusat dan retensi yang memadai memastikan jejak audit tetap tersedia saat investigasi maupun audit kepatuhan."
+  }
+]
