@@ -3,7 +3,7 @@
 **Cyber Defender Academy** adalah simulator edukasi keamanan siber (*100% defensive & legal*) berbasis browser untuk melatih alur kerja *Blue Team*, analisis *Security Operations Center (SOC)*, dan pengembangan karier keamanan informasi dari level **Security Intern** hingga **Chief Information Security Officer (CISO)**.
 
 - **Live Simulator:** https://andarmax.github.io/cyber-defender-academy/
-- **Animated Promo Poster:** https://andarmax.github.io/cyber-defender-academy/promo.html
+- **Animated Promo Poster:** https://andarmax.github.io/cyber-defender-academy/promosi.html
 
 ---
 
