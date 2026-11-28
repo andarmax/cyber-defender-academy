@@ -1,0 +1,19 @@
+{
+  "name": "Cyber Defender Academy",
+  "short_name": "CDA SEC-OS",
+  "description": "Defensive SOC & Cybersecurity Career Simulator (Intern to CISO)",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#060b14",
+  "theme_color": "#00f0ff",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='96' fill='%23060b14'/%3E%3Cpath d='M256 64L416 128V248C416 352 346 436 256 464C166 436 96 352 96 248V128L256 64Z' fill='%230c1f38' stroke='%2300f0ff' stroke-width='24'/%3E%3Cpath d='M256 124L364 168V248C364 318 316 376 256 398C196 376 148 318 148 248V168L256 124Z' fill='none' stroke='%2300ff88' stroke-width='14'/%3E%3Ccircle cx='256' cy='252' r='26' fill='%2300ff88'/%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
