@@ -3,377 +3,484 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Cyber Defender Academy - Simulasi Edukasi Cybersecurity Defensif dari Intern hingga CISO." />
-  <title>Cyber Defender Academy | Defensive SOC & Career Simulator</title>
-  <link rel="stylesheet" href="./css/style.css" />
+  <meta name="description" content="Cyber Defender Academy (CDA // SEC-OS) — Simulator edukasi keamanan siber defensif berbasis browser dari level Intern hingga CISO." />
+  <meta name="theme-color" content="#00f0ff" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="CDA SEC-OS" />
+  <title>Cyber Defender Academy // CDA SEC-OS v4.3</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
   <canvas id="bg-particles" aria-hidden="true"></canvas>
 
-  <!-- Boot / Loading Screen -->
+  <!-- Loading Overlay -->
   <div id="loading-screen" class="loading-overlay" role="status" aria-live="polite">
     <div class="loader-box">
-      <div class="cyber-emblem">CDA // SEC-OS v4.2</div>
+      <div class="cyber-emblem">CDA // SEC-OS v4.3</div>
       <div class="loader-bar-wrap">
-        <div id="loader-progress" class="loader-bar-fill"></div>
+        <div id="loader-bar" class="loader-bar-fill"></div>
       </div>
-      <p id="loader-status" class="mono-text">Initializing Defensive Sandbox Environment...</p>
+      <p id="loader-text" class="mono-text">Memuat modul SOC Telemetry, SIEM &amp; Threat Intel...</p>
     </div>
   </div>
 
   <!-- Onboarding Modal -->
-  <div id="onboarding-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="onboard-title">
+  <div id="onboarding-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="onboarding-title">
     <div class="modal-card glowing-border">
       <div class="modal-header onboarding-header">
         <span class="badge-neon">NEW OPERATIVE REGISTRATION</span>
-        <h2 id="onboard-title">Selamat Datang di Cyber Defender Academy</h2>
+        <h2 id="onboarding-title">Cyber Defender Academy</h2>
       </div>
       <p class="modal-desc">
-        Anda diterima sebagai <strong>Cyber Security Intern</strong> di <em>Nusantara Cyber Shield Corp</em>.
-        Lindungi infrastruktur perusahaan dari ancaman digital melalui analisis defensif yang legal, etis, dan berbasis standar industri.
+        Selamat datang di pusat simulasi pertahanan siber (100% defensive &amp; legal). Daftarkan callsign operatif untuk memulai karier dari <strong>Security Intern</strong> menuju <strong>CISO</strong>.
       </p>
-      <div class="form-group">
-        <label for="agent-name-input">Codename / Username Operatif:</label>
-        <input type="text" id="agent-name-input" maxlength="20" placeholder="Contoh: andarmax" autocomplete="off" />
-      </div>
-      <button id="btn-start-career" class="btn btn-primary btn-block">MULAI KARIER SEBAGAI INTERN</button>
+      <form id="onboarding-form">
+        <div class="form-group">
+          <label for="operative-name-input">Callsign / Nama Operatif</label>
+          <input
+            type="text"
+            id="operative-name-input"
+            maxlength="24"
+            placeholder="Contoh: ANDAR"
+            autocomplete="off"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="operative-track-select">Spesialisasi Awal Blue Team</label>
+          <select id="operative-track-select" class="cyber-select">
+            <option value="soc">SOC Analyst (Log Triage &amp; SIEM)</option>
+            <option value="ir">Incident Responder (NIST SP 800-61)</option>
+            <option value="ti">Threat Intelligence &amp; IOC Hunter</option>
+            <option value="arch">Defensive Security Architect</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Inisialisasi Terminal SEC-OS →</button>
+      </form>
     </div>
   </div>
 
-  <!-- Main App Shell -->
-  <div id="app-shell" class="app-shell hidden">
+  <!-- Mission & Interactive Briefing Modal -->
+  <div id="mission-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="modal-mission-title">
+    <div class="modal-card modal-lg glowing-border">
+      <div class="modal-header">
+        <div>
+          <span id="modal-mission-badge" class="badge-neon">MISSION BRIEFING</span>
+          <h2 id="modal-mission-title">Judul Misi</h2>
+        </div>
+        <button type="button" id="close-mission-modal" class="icon-btn" aria-label="Tutup modal">✕</button>
+      </div>
+      <div id="modal-mission-body"></div>
+    </div>
+  </div>
+
+  <!-- Main Application Shell -->
+  <div id="app-shell" class="app-shell">
+    <!-- Top HUD -->
     <header class="top-hud">
       <div class="hud-brand">
-        <div class="brand-logo">🛡️ CDA</div>
+        <span class="brand-logo">[🛡️ CDA]</span>
         <div class="brand-info">
-          <span class="brand-title">CYBER DEFENDER ACADEMY</span>
-          <span id="hud-rank-badge" class="rank-pill">INTERN</span>
+          <span class="brand-title">CDA // SEC-OS v4.3</span>
+          <span id="hud-player-name" class="mono-text player-name-display">OPERATIVE</span>
+          <span id="hud-rank" class="rank-pill">SECURITY INTERN</span>
+          <span id="hud-level" class="lvl-tag">LVL 1</span>
         </div>
       </div>
 
       <div class="hud-stats">
         <div class="stat-chip">
-          <span class="stat-label">AGENT</span>
-          <span id="hud-username" class="stat-val neon-blue">andarmax</span>
-          <span id="hud-level" class="lvl-tag">LVL 1</span>
-        </div>
-        <div class="stat-chip">
           <span class="stat-label">XP</span>
+          <span id="hud-xp" class="stat-val neon-blue">0 / 250</span>
           <div class="xp-mini-wrap">
             <div id="hud-xp-bar" class="xp-mini-fill"></div>
           </div>
-          <span id="hud-xp-text" class="stat-val">0 / 500</span>
-        </div>
-        <div class="stat-chip">
-          <span class="stat-label">CREDITS</span>
-          <span id="hud-credits" class="stat-val neon-green">₵ 1,000</span>
-        </div>
-        <div class="stat-chip">
-          <span class="stat-label">REPUTATION</span>
-          <span id="hud-reputation" class="stat-val neon-purple">50%</span>
         </div>
         <div class="stat-chip">
           <span class="stat-label">SP</span>
-          <span id="hud-sp" class="stat-val neon-amber">2</span>
+          <span id="hud-sp" class="stat-val neon-green">0</span>
+        </div>
+        <div class="stat-chip">
+          <span class="stat-label">STREAK</span>
+          <span id="hud-streak" class="stat-val neon-amber">1d</span>
         </div>
       </div>
 
       <div class="hud-controls">
-        <button id="btn-toggle-sound" class="icon-btn" aria-label="Toggle Sound Effects" title="Toggle Audio">🔊</button>
-        <button id="btn-toggle-bgm" class="icon-btn" aria-label="Toggle Ambient Synth" title="Toggle Ambient Synth">🎵</button>
-        <button id="btn-save-now" class="icon-btn" aria-label="Save Progress" title="Force Auto-Save">💾</button>
+        <button type="button" id="btn-toggle-audio" class="icon-btn" title="Suara Efek" aria-label="Toggle Audio">🔊</button>
+        <a href="promo.html" class="btn btn-sm btn-outline" title="Buka Poster Promosi Beranimasi">🎥 Promo</a>
       </div>
     </header>
 
+    <!-- Workspace Container -->
     <div class="workspace-container">
-      <nav class="side-nav" aria-label="Main Navigation">
-        <button class="nav-item active" data-view="dashboard">
-          <span class="nav-icon">📊</span>
-          <span class="nav-text">SOC Dashboard</span>
-        </button>
-        <button class="nav-item" data-view="missions">
-          <span class="nav-icon">🎯</span>
-          <span class="nav-text">Missions (50+)</span>
-        </button>
-        <button class="nav-item" data-view="siem">
-          <span class="nav-icon">📟</span>
-          <span class="nav-text">Mini SIEM</span>
-        </button>
-        <button class="nav-item" data-view="threatintel">
-          <span class="nav-icon">🛰️</span>
-          <span class="nav-text">Threat Intel</span>
-        </button>
-        <button class="nav-item" data-view="simulations">
-          <span class="nav-icon">🧪</span>
-          <span class="nav-text">Cyber Labs</span>
-        </button>
-        <button class="nav-item" data-view="quiz">
-          <span class="nav-icon">🧠</span>
-          <span class="nav-text">Cyber Quiz</span>
-        </button>
-        <button class="nav-item" data-view="skilltree">
-          <span class="nav-icon">🌳</span>
-          <span class="nav-text">Skill Tree</span>
-        </button>
-        <button class="nav-item" data-view="inventory">
-          <span class="nav-icon">🎒</span>
-          <span class="nav-text">Armory</span>
-        </button>
-        <button class="nav-item" data-view="achievements">
-          <span class="nav-icon">🏆</span>
-          <span class="nav-text">Achievements</span>
-        </button>
-        <button class="nav-item" data-view="leaderboard">
-          <span class="nav-icon">📈</span>
-          <span class="nav-text">Leaderboard</span>
-        </button>
+      <!-- Navigation -->
+      <nav id="side-nav" class="side-nav" aria-label="Navigasi Modul Utama">
+        <button type="button" class="nav-item active" data-view="dashboard">📊 Command Center</button>
+        <button type="button" class="nav-item" data-view="missions">🎯 Defensive Missions</button>
+        <button type="button" class="nav-item" data-view="siem">📟 Mini SIEM</button>
+        <button type="button" class="nav-item" data-view="threatintel">🛰️ Threat Intel</button>
+        <button type="button" class="nav-item" data-view="labs">🧪 Cyber Labs</button>
+        <button type="button" class="nav-item" data-view="quiz">🧠 Quiz Bank</button>
+        <button type="button" class="nav-item" data-view="skills">🌳 Skill Tree</button>
+        <button type="button" class="nav-item" data-view="career">🎓 Career &amp; Certs</button>
+        <button type="button" class="nav-item" data-view="achievements">🏆 Achievements</button>
+        <button type="button" class="nav-item" data-view="settings">⚙️ System &amp; Save</button>
       </nav>
 
-      <main id="main-viewport" class="main-viewport">
-        <!-- VIEW 1: SOC DASHBOARD -->
+      <!-- Main Viewport -->
+      <main class="main-viewport">
+        <!-- 1. COMMAND CENTER / DASHBOARD -->
         <section id="view-dashboard" class="view-section active">
           <div class="section-header">
             <div>
-              <h1>Security Operations Center (SOC) Command</h1>
-              <p class="subtitle">Real-time corporate defense telemetry, SOC performance KPIs, and certification roadmap.</p>
+              <h1>SOC Command Center</h1>
+              <p class="subtitle">Ringkasan kesiapan pertahanan siber, progres karier, dan tantangan harian operatif.</p>
             </div>
             <div class="threat-meter-box">
-              <span class="meter-label">DEFCON / THREAT LEVEL:</span>
-              <span id="soc-threat-level" class="threat-badge low">GUARDED (LOW)</span>
+              <span class="meter-label">GLOBAL THREAT LEVEL:</span>
+              <span id="global-threat-badge" class="threat-badge medium">ELEVATED // GUARDED</span>
             </div>
           </div>
 
-          <!-- Career Progression Track -->
-          <div class="card glowing-card career-card">
-            <div class="card-title-row">
-              <h3>Career Progression Track</h3>
-              <span id="career-next-req" class="mono-text">Next Rank: Junior Analyst (Level 3)</span>
-            </div>
-            <div id="career-roadmap-track" class="career-steps"></div>
-          </div>
-
-          <!-- Certification Career Roadmap -->
-          <div class="card glowing-card" style="margin-bottom:1.1rem;">
-            <div class="card-title-row">
-              <h3>🎓 Certification Career Roadmap (Simulated)</h3>
-              <span id="cert-summary-badge" class="badge-neon">0 / 6 Certified</span>
-            </div>
-            <div id="cert-roadmap-grid" class="cert-grid"></div>
-          </div>
-
-          <!-- Real-Time SOC Metrics Dashboard -->
-          <div class="card glowing-card" style="margin-bottom:1.1rem;">
-            <div class="card-title-row">
-              <h3>📈 Live SOC Operational Metrics</h3>
-              <span class="mono-text">Calculated from SIEM, CTI &amp; Mission Telemetry</span>
-            </div>
-            <div id="soc-metrics-grid" class="soc-metrics-grid"></div>
-          </div>
-
-          <!-- Core Progress KPI Grid -->
           <div class="grid-4">
-            <div class="card stat-card">
-              <span class="kpi-label">Missions Completed</span>
-              <span id="kpi-missions" class="kpi-value neon-blue">0 / 50</span>
-              <span class="kpi-sub">Defensive Operations</span>
+            <div class="card stat-card glowing-card">
+              <span class="kpi-label">MISI SELESAI</span>
+              <span id="kpi-missions" class="kpi-value neon-blue">0 / 50+</span>
+              <span class="kpi-sub">Skenario Blue Team terverifikasi</span>
             </div>
-            <div class="card stat-card">
-              <span class="kpi-label">Quiz Accuracy</span>
-              <span id="kpi-quiz" class="kpi-value neon-green">0%</span>
-              <span id="kpi-quiz-sub" class="kpi-sub">0 Answered</span>
+            <div class="card stat-card glowing-card">
+              <span class="kpi-label">SOC DEFENSE SCORE</span>
+              <span id="kpi-score" class="kpi-value neon-green">0</span>
+              <span class="kpi-sub">Akumulasi poin investigasi</span>
             </div>
-            <div class="card stat-card">
-              <span class="kpi-label">Security Posture</span>
-              <span id="kpi-posture" class="kpi-value neon-purple">50 / 100</span>
-              <span class="kpi-sub">Firewall + SIEM + Skills</span>
+            <div class="card stat-card glowing-card">
+              <span class="kpi-label">CONTAINMENT RATE</span>
+              <span id="kpi-containment" class="kpi-value neon-purple">100%</span>
+              <span class="kpi-sub">Target operasional SOC ≥ 90%</span>
             </div>
-            <div class="card stat-card">
-              <span class="kpi-label">Achievement Points</span>
-              <span id="kpi-ap" class="kpi-value neon-amber">0 AP</span>
-              <span id="kpi-ach-count" class="kpi-sub">0 Unlocked</span>
+            <div class="card stat-card glowing-card">
+              <span class="kpi-label">AKURASI KUIS</span>
+              <span id="kpi-accuracy" class="kpi-value neon-amber">0%</span>
+              <span class="kpi-sub">Evaluasi standar NIST &amp; MITRE</span>
             </div>
           </div>
 
-          <!-- Daily Challenge & Live SOC Alert Queue -->
+          <div class="card career-card glowing-card">
+            <div class="card-title-row">
+              <h3>Jenjang Karier Keamanan Siber (Intern → CISO)</h3>
+              <span id="career-progress-label" class="mono-text">Stage 1 / 7</span>
+            </div>
+            <div id="career-steps-grid" class="career-steps"></div>
+          </div>
+
           <div class="grid-2">
             <div class="card glowing-card">
               <div class="card-title-row">
-                <h3>⚡ Daily Security Directive</h3>
-                <span class="mono-text">Resets at 00:00 UTC</span>
+                <h3>⚡ Daily SOC Challenge</h3>
+                <span class="badge-neon">+150 XP</span>
               </div>
-              <div id="daily-challenge-box" class="daily-box"></div>
+              <div id="daily-challenge-box">
+                <p class="briefing-box">Selesaikan 1 investigasi insiden atau triase log SIEM hari ini untuk mempertahankan streak operatif.</p>
+                <button type="button" id="btn-start-daily" class="btn btn-primary btn-sm">Jalankan Tantangan Harian</button>
+              </div>
             </div>
 
             <div class="card glowing-card">
               <div class="card-title-row">
-                <h3>📡 Live SOC Incident Queue</h3>
-                <button id="btn-refresh-soc" class="btn btn-sm btn-outline">Scan Logs</button>
+                <h3>📡 Telemetri &amp; Aktivitas Terbaru</h3>
+                <span class="mono-text">LIVE FEED</span>
               </div>
-              <div id="soc-alert-feed" class="soc-feed"></div>
+              <div id="recent-activity-list" class="soc-feed">
+                <div class="soc-alert-item">
+                  <span>Sistem CDA // SEC-OS siap. Pilih misi atau buka Mini SIEM untuk memulai patroli.</span>
+                  <span class="tag-chip">READY</span>
+                </div>
+              </div>
             </div>
           </div>
         </section>
 
-        <!-- VIEW 2: MISSIONS (50+) -->
+        <!-- 2. DEFENSIVE MISSIONS -->
         <section id="view-missions" class="view-section">
           <div class="section-header">
             <div>
-              <h1>Defensive Operations &amp; Missions</h1>
-              <p class="subtitle">Selesaikan 50+ skenario keamanan siber legal yang terpetakan ke NIST CSF, CIS Controls, CVSS, CWE &amp; MITRE ATT&amp;CK.</p>
-            </div>
-            <div class="filter-bar">
-              <select id="mission-category-filter" class="cyber-select" aria-label="Filter Kategori Misi">
-                <option value="ALL">Semua Kategori (10 Tipe)</option>
-                <option value="Phishing Detection">Phishing Detection</option>
-                <option value="Email Investigation">Email Investigation</option>
-                <option value="Password Security">Password Security</option>
-                <option value="Malware Identification">Malware Identification</option>
-                <option value="Incident Response">Incident Response</option>
-                <option value="Risk Assessment">Risk Assessment</option>
-                <option value="Security Awareness">Security Awareness</option>
-                <option value="Vulnerability Prioritization">Vulnerability Prioritization</option>
-                <option value="Backup Recovery">Backup Recovery</option>
-                <option value="Log Analysis">Log Analysis</option>
-              </select>
-              <select id="mission-status-filter" class="cyber-select" aria-label="Filter Status Misi">
-                <option value="ALL">Semua Status</option>
-                <option value="AVAILABLE">Tersedia</option>
-                <option value="COMPLETED">Selesai</option>
-              </select>
+              <h1>Defensive Missions (50+ Scenarios)</h1>
+              <p class="subtitle">Latihan investigasi insiden terpetakan ke NIST CSF, NIST SP 800-61, CIS Controls, CVSS, CWE &amp; MITRE ATT&amp;CK.</p>
             </div>
           </div>
+
+          <div class="filter-bar">
+            <select id="mission-category-filter" class="cyber-select" aria-label="Filter Kategori Misi">
+              <option value="all">Semua Domain Pertahanan</option>
+              <option value="phishing">Phishing &amp; Email Security</option>
+              <option value="soc">SOC Log &amp; Alert Triage</option>
+              <option value="network">Network &amp; Firewall Defense</option>
+              <option value="malware">Malware &amp; Endpoint Forensics</option>
+              <option value="iam">Identity, Access &amp; Hardening</option>
+              <option value="governance">Risk, Governance &amp; CISO Strategy</option>
+            </select>
+            <select id="mission-diff-filter" class="cyber-select" aria-label="Filter Tingkat Kesulitan">
+              <option value="all">Semua Tingkat Kesulitan</option>
+              <option value="Beginner">Beginner (Intern)</option>
+              <option value="Intermediate">Intermediate (Analyst)</option>
+              <option value="Advanced">Advanced (Senior / Lead)</option>
+              <option value="Executive">Executive (CISO)</option>
+            </select>
+          </div>
+
           <div id="missions-grid" class="missions-grid"></div>
         </section>
 
-        <!-- VIEW 3: MINI SIEM CONSOLE -->
+        <!-- 3. MINI SIEM CONSOLE -->
         <section id="view-siem" class="view-section">
           <div class="section-header">
             <div>
-              <h1>📟 Mini SIEM Log Triage Console</h1>
-              <p class="subtitle">Analisis log autentikasi, firewall, DNS, VPN, dan endpoint untuk mengklasifikasikan Benign, Suspicious, atau Malicious.</p>
+              <h1>Mini SIEM Console</h1>
+              <p class="subtitle">Korelasi event keamanan lintas sensor (Auth, Firewall, DNS, VPN, Endpoint) dan evaluasi metrik SOC.</p>
+            </div>
+            <button type="button" id="btn-simulate-logs" class="btn btn-primary btn-sm">+ Ingest Event Baru</button>
+          </div>
+
+          <div class="siem-telemetry-strip" style="margin-bottom: 1rem;">
+            <span>EPS: <strong class="neon-green">1,420</strong></span>
+            <span>SENSORS: <strong class="neon-blue">5 ONLINE</strong></span>
+            <span>ENGINE: <strong>CORRELATION-V4</strong></span>
+          </div>
+
+          <div class="soc-metrics-grid" style="margin-bottom: 1.1rem;">
+            <div class="soc-metric-tile">
+              <span class="kpi-label">MTTD (Mean Time to Detect)</span>
+              <span id="siem-mttd" class="kpi-value neon-blue">3.2m</span>
+              <span class="kpi-sub">Target &lt; 5.0m</span>
+            </div>
+            <div class="soc-metric-tile">
+              <span class="kpi-label">MTTR (Mean Time to Respond)</span>
+              <span id="siem-mttr" class="kpi-value neon-green">11.4m</span>
+              <span class="kpi-sub">Target &lt; 15.0m</span>
+            </div>
+            <div class="soc-metric-tile">
+              <span class="kpi-label">CONTAINMENT RATE</span>
+              <span id="siem-containment" class="kpi-value neon-purple">94%</span>
+              <span class="kpi-sub">Isolasi insiden valid</span>
+            </div>
+            <div class="soc-metric-tile">
+              <span class="kpi-label">FALSE POSITIVE RATE</span>
+              <span id="siem-fpr" class="kpi-value neon-amber">6%</span>
+              <span class="kpi-sub">Target ≤ 10%</span>
             </div>
           </div>
-          <div id="siem-workspace"></div>
+
+          <div class="filter-bar">
+            <select id="siem-source-filter" class="cyber-select" aria-label="Filter Sumber Log SIEM">
+              <option value="all">Semua Sumber Log (Auth, Firewall, DNS, VPN, Endpoint)</option>
+              <option value="AUTH">Auth / Identity Logs</option>
+              <option value="FIREWALL">Perimeter Firewall</option>
+              <option value="DNS">DNS Resolver Telemetry</option>
+              <option value="VPN">Remote Access VPN</option>
+              <option value="ENDPOINT">EDR / Endpoint Process</option>
+            </select>
+          </div>
+
+          <div id="siem-feed" class="soc-feed"></div>
         </section>
 
-        <!-- VIEW 4: THREAT INTELLIGENCE CENTER -->
+        <!-- 4. THREAT INTELLIGENCE CENTER -->
         <section id="view-threatintel" class="view-section">
           <div class="section-header">
             <div>
-              <h1>🛰️ Threat Intelligence Center</h1>
-              <p class="subtitle">Evaluasi Indicators of Compromise (IOC), laporan kampanye ancaman, tingkat keparahan, dan mitigasi MITRE ATT&amp;CK.</p>
+              <h1>Threat Intelligence Center</h1>
+              <p class="subtitle">Analisis reputasi Indicators of Compromise (IOC), pemetaan TTP MITRE ATT&amp;CK, dan ringkasan kampanye ancaman.</p>
             </div>
           </div>
-          <div id="ti-workspace"></div>
+
+          <div class="card glowing-card" style="margin-bottom: 1.1rem;">
+            <div class="card-title-row">
+              <h3>🔍 IOC Reputation &amp; Enrichment Lookup</h3>
+              <span class="mono-text">IPv4 • DOMAIN • SHA-256</span>
+            </div>
+            <div class="filter-bar" style="margin-bottom: 0.65rem;">
+              <input
+                type="text"
+                id="ioc-search-input"
+                placeholder="Masukkan IP, domain, atau hash contoh (misal: 185.220.101.45 atau update-billing-auth.net)"
+              />
+              <button type="button" id="btn-analyze-ioc" class="btn btn-primary">Analisis IOC</button>
+            </div>
+            <div id="ioc-result-box" class="mono-box">Masukkan indikator ancaman di atas atau pilih salah satu intel brief di bawah untuk melihat analisis TTP &amp; rekomendasi mitigasi.</div>
+          </div>
+
+          <div id="threat-campaigns-grid" class="missions-grid"></div>
         </section>
 
-        <!-- VIEW 5: INTERACTIVE CYBER LABS -->
-        <section id="view-simulations" class="view-section">
+        <!-- 5. INTERACTIVE CYBER LABS -->
+        <section id="view-labs" class="view-section">
           <div class="section-header">
             <div>
-              <h1>Interactive Defensive Cyber Labs</h1>
-              <p class="subtitle">Simulasi interaktif tanpa batas untuk melatih keterampilan teknis Blue Team.</p>
+              <h1>5 Interactive Cyber Labs</h1>
+              <p class="subtitle">Simulasi praktik langsung untuk menguji ketajaman konfigurasi pertahanan dan forensik.</p>
             </div>
           </div>
 
-          <div class="lab-tabs">
-            <button class="lab-tab active" data-lab="phishing">📧 Phishing Inspector</button>
-            <button class="lab-tab" data-lab="password">🔐 Password &amp; MFA Lab</button>
-            <button class="lab-tab" data-lab="forensics">🔍 Digital Forensics</button>
-            <button class="lab-tab" data-lab="malware">🦠 Malware Classifier</button>
-            <button class="lab-tab" data-lab="network">🌐 Network Defense</button>
+          <div class="lab-tabs" role="tablist">
+            <button type="button" class="lab-tab active" data-lab="phishing">1. Phishing Header Lab</button>
+            <button type="button" class="lab-tab" data-lab="password">2. Password &amp; Entropy Lab</button>
+            <button type="button" class="lab-tab" data-lab="firewall">3. Firewall ACL Lab</button>
+            <button type="button" class="lab-tab" data-lab="network">4. Network Hardening Lab</button>
+            <button type="button" class="lab-tab" data-lab="forensics">5. Log Forensics Lab</button>
           </div>
 
-          <div id="lab-workspace" class="card glowing-card lab-workspace"></div>
+          <div id="lab-workspace" class="card glowing-card"></div>
         </section>
 
-        <!-- VIEW 6: CYBER QUIZ -->
+        <!-- 6. QUIZ BANK -->
         <section id="view-quiz" class="view-section">
           <div class="section-header">
             <div>
-              <h1>Cybersecurity Certification Quiz Engine</h1>
-              <p class="subtitle">Bank 200+ soal acak mencakup 8 domain standar industri keamanan informasi.</p>
+              <h1>Cyber Defense Quiz Bank (200+ Questions)</h1>
+              <p class="subtitle">Uji pemahaman konsep keamanan jaringan, kriptografi, manajemen insiden, dan tata kelola risiko.</p>
             </div>
           </div>
-          <div id="quiz-container" class="card glowing-card"></div>
+
+          <div class="filter-bar">
+            <select id="quiz-topic-filter" class="cyber-select" aria-label="Pilih Topik Kuis">
+              <option value="all">Semua Topik Keamanan Siber</option>
+              <option value="network">Network Security &amp; Protocols</option>
+              <option value="soc">SOC Operations &amp; SIEM</option>
+              <option value="crypto">Cryptography &amp; PKI</option>
+              <option value="incident">Incident Response (NIST 800-61)</option>
+              <option value="governance">Governance, Risk &amp; Compliance</option>
+            </select>
+            <button type="button" id="btn-next-quiz" class="btn btn-primary">Soal Berikutnya →</button>
+          </div>
+
+          <div id="quiz-stage" class="card glowing-card"></div>
         </section>
 
-        <!-- VIEW 7: SKILL TREE -->
-        <section id="view-skilltree" class="view-section">
+        <!-- 7. SKILL TREE & INVENTORY -->
+        <section id="view-skills" class="view-section">
           <div class="section-header">
             <div>
-              <h1>Cyber Defense Skill Tree</h1>
-              <p class="subtitle">Alokasikan Skill Points (SP) untuk meningkatkan MTTD, MTTR, reward XP, dan postur pertahanan.</p>
+              <h1>Blue Team Skill Tree &amp; Arsenal</h1>
+              <p class="subtitle">Alokasikan Skill Points (SP) untuk meningkatkan kemampuan deteksi, forensik, dan arsitektur pertahanan.</p>
             </div>
-            <div class="sp-banner">Available Skill Points: <strong id="skill-sp-display" class="neon-amber">0</strong></div>
+            <div class="sp-banner">
+              <span class="meter-label">SKILL POINTS TERSEDIA:</span>
+              <strong id="skills-sp-display" class="neon-green">0 SP</strong>
+            </div>
           </div>
+
           <div id="skilltree-grid" class="skilltree-grid"></div>
+
+          <div class="card glowing-card">
+            <div class="card-title-row">
+              <h3>🧰 Defensive Toolkit &amp; Artefak Terbuka</h3>
+              <span class="mono-text">INVENTORY</span>
+            </div>
+            <div id="inventory-grid" class="grid-4"></div>
+          </div>
         </section>
 
-        <!-- VIEW 8: INVENTORY & ARMORY -->
-        <section id="view-inventory" class="view-section">
+        <!-- 8. CAREER & CERTIFICATION ROADMAP -->
+        <section id="view-career" class="view-section">
           <div class="section-header">
             <div>
-              <h1>Enterprise Security Armory &amp; Upgrades</h1>
-              <p class="subtitle">Gunakan Credits untuk membeli perangkat keras/lunak defensif dan lencana otorisasi.</p>
+              <h1>Certification &amp; Career Roadmap</h1>
+              <p class="subtitle">Peta sertifikasi industri yang selaras dengan progres level dan misi yang telah kamu selesaikan.</p>
             </div>
-            <div class="sp-banner">Available Budget: <strong id="shop-credits-display" class="neon-green">₵ 0</strong></div>
           </div>
-          <div id="inventory-grid" class="missions-grid"></div>
+
+          <div class="card glowing-card" style="margin-bottom: 1.1rem;">
+            <div class="card-title-row">
+              <h3>🎓 Industry Certification Milestones</h3>
+              <span class="mono-text">PNG CERTIFICATE READY</span>
+            </div>
+            <div id="cert-grid" class="cert-grid"></div>
+          </div>
+
+          <div class="card glowing-card">
+            <div class="card-title-row">
+              <h3>📈 Detail Tanggung Jawab Per Jenjang Jabatan</h3>
+              <span class="mono-text">INTERN → CISO</span>
+            </div>
+            <div id="career-roadmap-list" class="missions-grid"></div>
+          </div>
         </section>
 
-        <!-- VIEW 9: ACHIEVEMENTS -->
+        <!-- 9. ACHIEVEMENTS & LEADERBOARD -->
         <section id="view-achievements" class="view-section">
           <div class="section-header">
             <div>
-              <h1>Service Medals &amp; Achievements</h1>
-              <p class="subtitle">Rekam jejak pencapaian karier Anda di SOC, Threat Intelligence, Framework Mastery &amp; Sertifikasi.</p>
+              <h1>Achievements &amp; Operatives Ranking</h1>
+              <p class="subtitle">Lencana kehormatan Blue Team dan perbandingan skor dengan analis SOC simulasi.</p>
             </div>
           </div>
-          <div id="achievements-grid" class="missions-grid"></div>
+
+          <div id="achievements-grid" class="grid-4"></div>
+
+          <div class="card glowing-card">
+            <div class="card-title-row">
+              <h3>🏅 SOC Analyst Leaderboard</h3>
+              <span class="mono-text">SEASON 2026</span>
+            </div>
+            <div class="table-wrap">
+              <table class="cyber-table">
+                <thead>
+                  <tr>
+                    <th>Rank</th>
+                    <th>Operative</th>
+                    <th>Jabatan</th>
+                    <th>Level</th>
+                    <th>SOC Score</th>
+                  </tr>
+                </thead>
+                <tbody id="leaderboard-body"></tbody>
+              </table>
+            </div>
+          </div>
         </section>
 
-        <!-- VIEW 10: LEADERBOARD & SAVE MANAGEMENT -->
-        <section id="view-leaderboard" class="view-section">
+        <!-- 10. SYSTEM, BACKUP & PROMO -->
+        <section id="view-settings" class="view-section">
           <div class="section-header">
             <div>
-              <h1>SOC Hall of Fame &amp; Save Management</h1>
-              <p class="subtitle">Peringkat lokal operatif dan manajemen backup data penyimpanan browser (Schema v4.3).</p>
+              <h1>System Configuration &amp; Save Data</h1>
+              <p class="subtitle">Kelola profil operatif, cadangkan progres ke file JSON, atau buka materi promosi proyek.</p>
             </div>
           </div>
+
           <div class="grid-2">
             <div class="card glowing-card">
-              <h3>🏆 Local Operative Leaderboard</h3>
-              <div class="table-wrap">
-                <table class="cyber-table">
-                  <thead>
-                    <tr>
-                      <th>Rank</th>
-                      <th>Operative</th>
-                      <th>Title</th>
-                      <th>Level</th>
-                      <th>XP</th>
-                      <th>Certs</th>
-                      <th>AP</th>
-                    </tr>
-                  </thead>
-                  <tbody id="leaderboard-tbody"></tbody>
-                </table>
+              <div class="card-title-row">
+                <h3>💾 Backup &amp; Restore Progres (Schema v4.3)</h3>
+                <span class="badge-neon">LOCALSTORAGE</span>
+              </div>
+              <p class="briefing-box">
+                Seluruh progres tersimpan otomatis di browser perangkat ini. Ekspor file JSON secara berkala untuk memindahkan data antar perangkat.
+              </p>
+              <div class="save-actions">
+                <button type="button" id="btn-export-save" class="btn btn-primary btn-sm">⬇ Export Save (.json)</button>
+                <label for="import-save-file" class="btn btn-outline btn-sm" style="cursor: pointer;">
+                  ⬆ Import Save (.json)
+                  <input type="file" id="import-save-file" accept=".json" class="hidden" />
+                </label>
+                <button type="button" id="btn-reset-save" class="btn btn-danger btn-sm">🗑️ Reset Progres</button>
               </div>
             </div>
 
             <div class="card glowing-card">
-              <h3>⚙️ Save Data &amp; System Control</h3>
-              <p class="modal-desc">Semua progres otomatis tersimpan di <code>localStorage</code> browser Anda dengan validasi skema v4.3.</p>
-              <div class="save-actions">
-                <button id="btn-export-save" class="btn btn-outline">📤 Export Save JSON</button>
-                <label class="btn btn-outline file-upload-btn">
-                  📥 Import Save JSON
-                  <input type="file" id="input-import-save" accept=".json" hidden />
-                </label>
-                <button id="btn-reset-save" class="btn btn-danger">⚠️ Reset All Progress</button>
+              <div class="card-title-row">
+                <h3>🎬 Media &amp; Showcase Kit</h3>
+                <span class="rank-pill">GITHUB PAGES</span>
               </div>
-              <div id="save-metadata-box" class="mono-box"></div>
+              <p class="briefing-box">
+                Gunakan poster promosi beranimasi dengan rasio responsif (3:4, 9:16 Story, 16:9 Banner) serta fitur <em>Clean Record Mode</em> untuk kebutuhan portofolio dan media sosial.
+              </p>
+              <div class="save-actions">
+                <a href="promo.html" class="btn btn-success btn-sm">🎥 Buka Poster Animasi (promo.html)</a>
+              </div>
             </div>
           </div>
         </section>
@@ -381,27 +488,18 @@
     </div>
   </div>
 
-  <!-- Mission Execution Modal -->
-  <div id="mission-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="m-modal-title">
-    <div class="modal-card modal-lg glowing-border">
-      <div class="modal-header">
-        <div>
-          <span id="m-modal-cat" class="badge-neon">CATEGORY</span>
-          <span id="m-modal-diff" class="badge-diff">DIFFICULTY</span>
-        </div>
-        <button id="btn-close-mission" class="icon-btn" aria-label="Tutup Modal">✖</button>
-      </div>
-      <h2 id="m-modal-title">Mission Title</h2>
-      <div id="m-modal-briefing" class="briefing-box"></div>
-      <div id="m-modal-frameworks" class="fw-panel"></div>
-      <div id="m-modal-artifact" class="artifact-box"></div>
-      <div id="m-modal-options" class="options-list"></div>
-      <div id="m-modal-feedback" class="feedback-box hidden"></div>
-    </div>
-  </div>
-
+  <!-- Toast Notification Container -->
   <div id="toast-container" class="toast-container" aria-live="polite"></div>
 
-  <script type="module" src="./js/game.js"></script>
+  <!-- Application Modules -->
+  <script type="module" src="js/main.js"></script>
+  <script type="module" src="js/certificate.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
+    }
+  </script>
 </body>
 </html>
