@@ -22,7 +22,7 @@
       <div class="loader-bar-wrap">
         <div id="loader-bar" class="loader-bar-fill"></div>
       </div>
-      <p id="loader-text" class="mono-text">Memuat modul SOC Telemetry, SIEM &amp; Threat Intel...</p>
+      <p id="loader-text" class="mono-text">Menginisialisasi kernel CDA // SEC-OS...</p>
     </div>
   </div>
 
@@ -34,7 +34,7 @@
         <h2 id="onboarding-title">Cyber Defender Academy</h2>
       </div>
       <p class="modal-desc">
-        Selamat datang di pusat simulasi pertahanan siber (100% defensive &amp; legal). Daftarkan callsign operatif untuk memulai karier dari <strong>Security Intern</strong> menuju <strong>CISO</strong>.
+        Pusat simulasi pertahanan siber (100% defensive &amp; legal). Daftarkan callsign operatif untuk memulai jenjang karier dari <strong>Security Intern</strong> hingga <strong>CISO</strong>.
       </p>
       <form id="onboarding-form">
         <div class="form-group">
@@ -78,7 +78,6 @@
 
   <!-- Main Application Shell -->
   <div id="app-shell" class="app-shell">
-    <!-- Top HUD -->
     <header class="top-hud">
       <div class="hud-brand">
         <span class="brand-logo">[🛡️ CDA]</span>
@@ -114,9 +113,7 @@
       </div>
     </header>
 
-    <!-- Workspace Container -->
     <div class="workspace-container">
-      <!-- Navigation -->
       <nav id="side-nav" class="side-nav" aria-label="Navigasi Modul Utama">
         <button type="button" class="nav-item active" data-view="dashboard">📊 Command Center</button>
         <button type="button" class="nav-item" data-view="missions">🎯 Defensive Missions</button>
@@ -130,9 +127,8 @@
         <button type="button" class="nav-item" data-view="settings">⚙️ System &amp; Save</button>
       </nav>
 
-      <!-- Main Viewport -->
       <main class="main-viewport">
-        <!-- 1. COMMAND CENTER / DASHBOARD -->
+        <!-- 1. COMMAND CENTER -->
         <section id="view-dashboard" class="view-section active">
           <div class="section-header">
             <div>
@@ -148,7 +144,7 @@
           <div class="grid-4">
             <div class="card stat-card glowing-card">
               <span class="kpi-label">MISI SELESAI</span>
-              <span id="kpi-missions" class="kpi-value neon-blue">0 / 50+</span>
+              <span id="kpi-missions" class="kpi-value neon-blue">0 / 12</span>
               <span class="kpi-sub">Skenario Blue Team terverifikasi</span>
             </div>
             <div class="card stat-card glowing-card">
@@ -193,12 +189,7 @@
                 <h3>📡 Telemetri &amp; Aktivitas Terbaru</h3>
                 <span class="mono-text">LIVE FEED</span>
               </div>
-              <div id="recent-activity-list" class="soc-feed">
-                <div class="soc-alert-item">
-                  <span>Sistem CDA // SEC-OS siap. Pilih misi atau buka Mini SIEM untuk memulai patroli.</span>
-                  <span class="tag-chip">READY</span>
-                </div>
-              </div>
+              <div id="recent-activity-list" class="soc-feed"></div>
             </div>
           </div>
         </section>
@@ -207,7 +198,7 @@
         <section id="view-missions" class="view-section">
           <div class="section-header">
             <div>
-              <h1>Defensive Missions (50+ Scenarios)</h1>
+              <h1>Defensive Missions</h1>
               <p class="subtitle">Latihan investigasi insiden terpetakan ke NIST CSF, NIST SP 800-61, CIS Controls, CVSS, CWE &amp; MITRE ATT&amp;CK.</p>
             </div>
           </div>
@@ -305,11 +296,11 @@
               <input
                 type="text"
                 id="ioc-search-input"
-                placeholder="Masukkan IP, domain, atau hash contoh (misal: 185.220.101.45 atau update-billing-auth.net)"
+                placeholder="Masukkan IP, domain, atau hash (contoh: 185.220.101.45 atau update-billing-auth.net)"
               />
               <button type="button" id="btn-analyze-ioc" class="btn btn-primary">Analisis IOC</button>
             </div>
-            <div id="ioc-result-box" class="mono-box">Masukkan indikator ancaman di atas atau pilih salah satu intel brief di bawah untuk melihat analisis TTP &amp; rekomendasi mitigasi.</div>
+            <div id="ioc-result-box" class="mono-box">Masukkan indikator ancaman di atas atau klik tombol "Periksa IOC" pada intel brief di bawah untuk melihat analisis TTP &amp; rekomendasi mitigasi.</div>
           </div>
 
           <div id="threat-campaigns-grid" class="missions-grid"></div>
@@ -339,7 +330,7 @@
         <section id="view-quiz" class="view-section">
           <div class="section-header">
             <div>
-              <h1>Cyber Defense Quiz Bank (200+ Questions)</h1>
+              <h1>Cyber Defense Quiz Bank</h1>
               <p class="subtitle">Uji pemahaman konsep keamanan jaringan, kriptografi, manajemen insiden, dan tata kelola risiko.</p>
             </div>
           </div>
@@ -491,13 +482,22 @@
   <!-- Toast Notification Container -->
   <div id="toast-container" class="toast-container" aria-live="polite"></div>
 
-  <!-- Application Modules -->
+  <!-- Failsafe Boot Script + Application Modules -->
+  <script>
+    window.__CDA_BOOT_DONE = false;
+    setTimeout(function () {
+      if (!window.__CDA_BOOT_DONE) {
+        var screen = document.getElementById('loading-screen');
+        if (screen) screen.classList.add('hidden');
+      }
+    }, 3500);
+  </script>
   <script type="module" src="js/main.js"></script>
   <script type="module" src="js/certificate.js"></script>
   <script>
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('./sw.js').catch(function () {});
       });
     }
   </script>
